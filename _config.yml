@@ -1,0 +1,15 @@
+title: "AIエージェント 教科書"
+description: "MCP / Skills / Output / Agent — okatech さん向け、業務に即した解説書"
+theme: jekyll-theme-cayman
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+plugins:
+  - jekyll-relative-links
+  - jekyll-seo-tag
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - "*.md"
