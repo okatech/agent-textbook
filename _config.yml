@@ -1,5 +1,8 @@
 title: "AIエージェント 教科書"
 description: "MCP / Skills / Output / Agent — okatech さん向け、業務に即した解説書"
+repository: okatech/agent-textbook
+url: "https://okatech.github.io"
+baseurl: "/agent-textbook"
 theme: jekyll-theme-cayman
 markdown: kramdown
 kramdown:
