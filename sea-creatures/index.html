@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sea Creatures 発音カード</title>
+<title>おさかなを英語で発音練習</title>
 <style>
   :root {
     --bg: #eef7fc;
@@ -29,6 +29,7 @@
   }
   header { padding: 20px 16px 8px; max-width: 960px; margin: 0 auto; }
   h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .credit { margin: 0 0 6px; font-size: .85rem; font-weight: 700; color: var(--accent); }
   .lead { color: var(--sub); margin: 0; font-size: .95rem; }
 
   .controls {
@@ -45,8 +46,6 @@
     font-weight: 700; padding: 6px 14px; cursor: pointer;
   }
   .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
-  select { font: inherit; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--border);
-           background: var(--card); color: var(--ink); max-width: 260px; }
 
   main { max-width: 960px; margin: 0 auto; padding: 16px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
@@ -101,7 +100,8 @@
 </head>
 <body>
 <header>
-  <h1>🐬 Sea Creatures 発音カード</h1>
+  <h1>🐟 おさかなを英語で発音練習</h1>
+  <p class="credit">アーヒスタ制作</p>
   <p class="lead">カードをタップすると英語の発音が流れます。くわしく見るには「詳しく」を押してください。</p>
 </header>
 
@@ -122,7 +122,10 @@
   </div>
   <div class="group">
     <span>声</span>
-    <select id="voice" aria-label="音声の選択"></select>
+    <div class="seg" role="group" aria-label="声">
+      <button type="button" data-gender="female" aria-pressed="true">👩 女性</button>
+      <button type="button" data-gender="male" aria-pressed="false">👨 男性</button>
+    </div>
   </div>
 </div>
 
@@ -134,8 +137,7 @@
 
 <p class="notice">
   ※ 音声はお使いの端末に入っている英語音声（読み上げエンジン）で再生されます。
-  声によって質が違うので、聞き取りにくいときは「声」を切り替えてみてください。
-  名前に <b>Natural / Premium / Enhanced / Google</b> が付く声は、より自然な発音になりやすいです。
+  端末に入っている声の中から、なるべく自然に聞こえる女性・男性の声を自動で選びます。
 </p>
 
 <dialog id="dlg">
@@ -188,7 +190,7 @@ const CREATURES = [
 
 // ---- 状態 -------------------------------------------------------------
 const RATES = { slow: 0.55, normal: 0.95 };
-const state = { rate: "normal", accent: "US", voiceURI: null };
+const state = { rate: "normal", accent: "US", gender: "female" };
 try {
   const saved = JSON.parse(localStorage.getItem("seaPron") || "{}");
   Object.assign(state, saved);
@@ -207,34 +209,36 @@ function voiceScore(v) {
   let s = 0;
   if (/natural|neural|premium|enhanced/.test(n)) s += 50;
   if (/google/.test(n)) s += 30;
-  if (/samantha|ava|allison|aria|jenny|guy|daniel|serena|libby|sonia|ryan/.test(n)) s += 20;
+  if (/samantha|ava|allison|aria|jenny|guy|daniel|serena|libby|sonia|ryan|aaron|nicky|evan|nathan|zoe|arthur/.test(n)) s += 20;
   if (!v.localService) s += 5;
   if (/compact|novelty|whisper|bells|bad news|jester|zarvox|trinoids|bubbles|boing|cellos|organ|albert|superstar|wobble|grandma|grandpa|rocko|shelley|eddy|flo|reed|sandy/.test(n)) s -= 100;
   return s;
 }
 function accentLang() { return state.accent === "US" ? "en-US" : "en-GB"; }
 
+// 声の名前から性別を判定（ブラウザは性別情報をくれないため、主要な声の名前で見分ける）
+const FEMALE = /female|samantha|ava\b|allison|susan|victoria|zoe|nicky|kate|serena|stephanie|martha|moira|tessa|karen|fiona|aria|jenny|zira|libby|sonia|hazel|michelle|emma|ana\b|ashley|cora|elizabeth|jane|monica|nancy|sara|amber|maisie|mia\b|google us english/;
+const MALE = /\bmale\b|alex\b|daniel|fred\b|tom\b|aaron|arthur|evan|nathan|oliver|rishi|david|guy\b|mark\b|ryan|george|christopher|eric\b|roger|steffan|brian|andrew|thomas|alfie|elliot|ethan|jacob|tony|davis|jason/;
+function genderOf(v) {
+  const n = v.name.toLowerCase();
+  if (FEMALE.test(n)) return "female";
+  if (MALE.test(n)) return "male";
+  return null;
+}
+
 function loadVoices() {
   const all = synth ? synth.getVoices() : [];
   const lang = accentLang().toLowerCase();
-  voices = all.filter(v => v.lang.replace("_", "-").toLowerCase() === lang)
+  voices = all.filter(v => v.lang.replace("_", "-").toLowerCase() === lang && voiceScore(v) > -50)
               .sort((a, b) => voiceScore(b) - voiceScore(a));
-  const sel = document.getElementById("voice");
-  sel.innerHTML = "";
-  if (!voices.length) {
-    const o = document.createElement("option");
-    o.textContent = "（標準の英語音声）";
-    sel.appendChild(o);
-    return;
-  }
-  voices.forEach(v => {
-    const o = document.createElement("option");
-    o.value = v.voiceURI;
-    o.textContent = v.name + (voiceScore(v) >= 20 ? " ⭐" : "");
-    sel.appendChild(o);
-  });
-  if (!voices.some(v => v.voiceURI === state.voiceURI)) state.voiceURI = voices[0].voiceURI;
-  sel.value = state.voiceURI;
+}
+
+// 選んだ性別の中で一番自然な声を返す。見つからない端末では、
+// 一番良い声の高さ（pitch）を変えて男女の違いを出す。
+function pickVoice() {
+  const match = voices.find(v => genderOf(v) === state.gender);
+  if (match) return { voice: match, pitch: 1 };
+  return { voice: voices[0], pitch: state.gender === "male" ? 0.8 : 1.1 };
 }
 
 function speak(creature, rateKey, cardEl) {
@@ -242,10 +246,10 @@ function speak(creature, rateKey, cardEl) {
   synth.cancel(); // 前の音声を止めてから再生
   const u = new SpeechSynthesisUtterance(creature.word);
   u.lang = accentLang();
-  const v = voices.find(v => v.voiceURI === state.voiceURI);
-  if (v) u.voice = v;
+  const { voice, pitch } = pickVoice();
+  if (voice) u.voice = voice;
   u.rate = RATES[rateKey || state.rate];
-  u.pitch = 1;
+  u.pitch = pitch;
   if (cardEl) {
     document.querySelectorAll(".card.playing").forEach(c => c.classList.remove("playing"));
     cardEl.classList.add("playing");
@@ -318,17 +322,19 @@ function syncButtons() {
     b.setAttribute("aria-pressed", String(b.dataset.rate === state.rate)));
   document.querySelectorAll("[data-accent]").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.accent === state.accent)));
+  document.querySelectorAll("[data-gender]").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.gender === state.gender)));
 }
 document.querySelectorAll("[data-rate]").forEach(b => b.addEventListener("click", () => {
   state.rate = b.dataset.rate; save(); syncButtons();
 }));
 document.querySelectorAll("[data-accent]").forEach(b => b.addEventListener("click", () => {
-  state.accent = b.dataset.accent; state.voiceURI = null; loadVoices(); save(); syncButtons();
+  state.accent = b.dataset.accent; loadVoices(); save(); syncButtons();
 }));
-document.getElementById("voice").addEventListener("change", e => {
-  state.voiceURI = e.target.value; save();
+document.querySelectorAll("[data-gender]").forEach(b => b.addEventListener("click", () => {
+  state.gender = b.dataset.gender; save(); syncButtons();
   speak(CREATURES[0]); // 選んだ声を試聴
-});
+}));
 
 renderGrid();
 syncButtons();
