@@ -35,16 +35,18 @@
   .controls {
     position: sticky; top: 0; z-index: 5; background: var(--bg);
     max-width: 960px; margin: 0 auto; padding: 10px 16px;
-    display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 8px 20px;
     border-bottom: 1px solid var(--border);
   }
-  .group { display: flex; align-items: center; gap: 6px; }
-  .group > span { font-size: .85rem; color: var(--sub); }
-  .seg { display: inline-flex; border: 2px solid var(--accent); border-radius: 999px; overflow: hidden; }
+  /* 3つの設定をすべて同じ形・同じ大きさにそろえる */
+  .group { display: grid; grid-template-columns: 5em 1fr; align-items: center; gap: 8px; }
+  .group > span { font-size: .9rem; font-weight: 700; color: var(--sub); }
+  .seg { display: flex; border: 2px solid var(--accent); border-radius: 999px; overflow: hidden; }
   .seg button {
-    border: 0; background: transparent; color: var(--accent); font: inherit;
-    font-weight: 700; padding: 6px 14px; cursor: pointer;
+    flex: 1; min-height: 44px; border: 0; background: transparent; color: var(--accent); font: inherit;
+    font-weight: 700; padding: 0 8px; cursor: pointer; white-space: nowrap;
   }
+  .seg button + button { border-left: 2px solid var(--accent); }
   .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
 
   main { max-width: 960px; margin: 0 auto; padding: 16px; }
@@ -86,11 +88,15 @@
   .tip b { color: var(--accent); }
   .play-row { display: flex; gap: 10px; }
   .play-row button {
-    flex: 1; border: 0; border-radius: 12px; padding: 14px 8px; font: inherit; font-weight: 700;
+    flex: 1; min-height: 52px; border: 2px solid var(--accent); border-radius: 12px; padding: 14px 8px; font: inherit; font-weight: 700;
     font-size: 1rem; cursor: pointer; background: var(--accent); color: #fff;
   }
   .play-row button.slow { background: var(--card); color: var(--accent); border: 2px solid var(--accent); }
-  .more { width: 100%; background: transparent; border: 0; color: var(--accent); font: inherit; font-size: .9rem; padding: 4px; cursor: pointer; }
+  .more {
+    width: 100%; min-height: 44px; margin-top: 6px; border: 2px solid var(--accent); border-radius: 999px;
+    background: var(--card); color: var(--accent); font: inherit; font-weight: 700; cursor: pointer;
+  }
+  .more:active { background: var(--accent-soft); }
   .close { margin-top: 12px; width: 100%; background: transparent; border: 0; color: var(--sub);
            font: inherit; padding: 8px; cursor: pointer; }
 
@@ -102,7 +108,7 @@
 <header>
   <h1>🐟 おさかなを英語で発音練習</h1>
   <p class="credit">アーヒスタ制作</p>
-  <p class="lead">カードをタップすると英語の発音が流れます。くわしく見るには「詳しく」を押してください。</p>
+  <p class="lead">カードをタップすると英語の発音が流れます。発音のコツは「詳しく見る」で確認できます。</p>
 </header>
 
 <div class="controls">
@@ -116,8 +122,8 @@
   <div class="group">
     <span>アクセント</span>
     <div class="seg" role="group" aria-label="アクセント">
-      <button type="button" data-accent="US" aria-pressed="true">🇺🇸 米</button>
-      <button type="button" data-accent="UK" aria-pressed="false">🇬🇧 英</button>
+      <button type="button" data-accent="US" aria-pressed="true">🇺🇸 アメリカ</button>
+      <button type="button" data-accent="UK" aria-pressed="false">🇬🇧 イギリス</button>
     </div>
   </div>
   <div class="group">
@@ -211,14 +217,15 @@ function voiceScore(v) {
   if (/google/.test(n)) s += 30;
   if (/samantha|ava|allison|aria|jenny|guy|daniel|serena|libby|sonia|ryan|aaron|nicky|evan|nathan|zoe|arthur/.test(n)) s += 20;
   if (!v.localService) s += 5;
-  if (/compact|novelty|whisper|bells|bad news|jester|zarvox|trinoids|bubbles|boing|cellos|organ|albert|superstar|wobble|grandma|grandpa|rocko|shelley|eddy|flo|reed|sandy/.test(n)) s -= 100;
+  if (/eddy|flo\b|reed|rocko|sandy|shelley|grandma|grandpa/.test(n)) s -= 30; // 機械っぽいが発音は正確
+  if (/compact|novelty|whisper|bells|bad news|jester|zarvox|trinoids|bubbles|boing|cellos|organ|albert|superstar|wobble|good news|hysterical/.test(n)) s -= 100;
   return s;
 }
 function accentLang() { return state.accent === "US" ? "en-US" : "en-GB"; }
 
 // 声の名前から性別を判定（ブラウザは性別情報をくれないため、主要な声の名前で見分ける）
-const FEMALE = /female|samantha|ava\b|allison|susan|victoria|zoe|nicky|kate|serena|stephanie|martha|moira|tessa|karen|fiona|aria|jenny|zira|libby|sonia|hazel|michelle|emma|ana\b|ashley|cora|elizabeth|jane|monica|nancy|sara|amber|maisie|mia\b|google us english/;
-const MALE = /\bmale\b|alex\b|daniel|fred\b|tom\b|aaron|arthur|evan|nathan|oliver|rishi|david|guy\b|mark\b|ryan|george|christopher|eric\b|roger|steffan|brian|andrew|thomas|alfie|elliot|ethan|jacob|tony|davis|jason/;
+const FEMALE = /female|flo\b|sandy|shelley|grandma|samantha|ava\b|allison|susan|victoria|zoe|nicky|kate|serena|stephanie|martha|moira|tessa|karen|fiona|aria|jenny|zira|libby|sonia|hazel|michelle|emma|ana\b|ashley|cora|elizabeth|jane|monica|nancy|sara|amber|maisie|mia\b|google us english/;
+const MALE = /\bmale\b|eddy|reed|rocko|grandpa|alex\b|daniel|fred\b|tom\b|aaron|arthur|evan|nathan|oliver|rishi|david|guy\b|mark\b|ryan|george|christopher|eric\b|roger|steffan|brian|andrew|thomas|alfie|elliot|ethan|jacob|tony|davis|jason/;
 function genderOf(v) {
   const n = v.name.toLowerCase();
   if (FEMALE.test(n)) return "female";
@@ -226,19 +233,27 @@ function genderOf(v) {
   return null;
 }
 
+// 英語の声をすべて集め、自然な順に並べる（変な効果音系の声は除外）
 function loadVoices() {
   const all = synth ? synth.getVoices() : [];
-  const lang = accentLang().toLowerCase();
-  voices = all.filter(v => v.lang.replace("_", "-").toLowerCase() === lang && voiceScore(v) > -50)
+  voices = all.filter(v => /^en/i.test(v.lang) && voiceScore(v) > -50)
               .sort((a, b) => voiceScore(b) - voiceScore(a));
 }
+const langOf = v => v.lang.replace("_", "-").toLowerCase();
+// 英国の女性の声がない端末向けに、発音が近い地域の声を次の候補にする
+const NEAR = { US: ["en-ca"], UK: ["en-ie", "en-au", "en-nz", "en-za"] };
 
-// 選んだ性別の中で一番自然な声を返す。見つからない端末では、
-// 一番良い声の高さ（pitch）を変えて男女の違いを出す。
+// 選んだアクセント・性別に一番合う声を返す。
+// ①同じアクセント＆性別 → ②近いアクセント＆性別 → ③英語の同じ性別 → ④声の高さで調整
 function pickVoice() {
-  const match = voices.find(v => genderOf(v) === state.gender);
+  const lang = accentLang().toLowerCase();
+  const sameGender = voices.filter(v => genderOf(v) === state.gender);
+  const match = sameGender.find(v => langOf(v) === lang)
+             || sameGender.find(v => NEAR[state.accent].includes(langOf(v)))
+             || sameGender[0];
   if (match) return { voice: match, pitch: 1 };
-  return { voice: voices[0], pitch: state.gender === "male" ? 0.8 : 1.1 };
+  const base = voices.find(v => langOf(v) === lang) || voices[0];
+  return { voice: base, pitch: state.gender === "male" ? 0.8 : 1.15 };
 }
 
 function speak(creature, rateKey, cardEl) {
@@ -274,7 +289,7 @@ function renderGrid() {
     const more = document.createElement("button");
     more.type = "button";
     more.className = "more";
-    more.textContent = "詳しく ›";
+    more.textContent = "詳しく見る";
     more.addEventListener("click", () => openDetail(c));
     wrap.append(btn, more);
     grid.appendChild(wrap);
