@@ -104,6 +104,15 @@
   .legend { font-size: .8rem; color: var(--sub); }
   .tip { background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; margin: 14px 0; font-size: .95rem; }
   .tip b { color: var(--accent); }
+  @media (max-width: 520px) {
+    .detail { padding: 16px; }
+    .detail img { width: 96px; height: 96px; }
+    .detail h2 { font-size: 1.5rem; }
+    .syl { margin-top: 10px; }
+  }
+  .fun { background: #fff4d6; color: #4a3800; border-radius: 12px; padding: 12px 14px; margin: -4px 0 14px; font-size: .95rem; }
+  .fun b { color: #b25e00; }
+  @media (prefers-color-scheme: dark) { .fun { background: #3a2f12; color: #f3e6c4; } .fun b { color: #ffb84d; } }
   .play-row { display: flex; gap: 10px; }
   .play-row button {
     flex: 1; min-height: 52px; border: 2px solid var(--accent); border-radius: 12px; padding: 14px 8px; font: inherit; font-weight: 700;
@@ -174,58 +183,71 @@
 
 <script>
 // ---- 生き物データ -------------------------------------------------------
-// ipa : アメリカ英語の発音記号（辞書の表記に準拠）
+// ipa           : アメリカ英語の発音記号（辞書の表記に準拠）
 // syl           : 音節の区切り。stress が強く読む音節の番号（0始まり）
 // tip           : 日本人が間違えやすいポイント
+// fun           : その生き物のおもしろ豆知識
 const CREATURES = [
   { id: "shark", word: "shark", ja: "サメ",
     ipa: "/ʃɑːrk/",
     syl: ["shark"], stress: [0],
-    tip: "「シャーク」より口を大きく開けて <b>ʃɑː</b>。最後の k は息だけで、「ク」と母音を付けないのがコツ。" },
+    tip: "「シャーク」より口を大きく開けて <b>ʃɑː</b>。最後の k は息だけで、「ク」と母音を付けないのがコツ。",
+    fun: "サメには<b>骨がありません</b>。体を支えているのは全部やわらかい「軟骨」。歯は一生生え変わり続け、一生で数万本も使う種類もいます。" },
   { id: "dolphin", word: "dolphin", ja: "イルカ",
     ipa: "/ˈdɑːlfɪn/",
     syl: ["dol", "phin"], stress: [0],
-    tip: "<b>ph は f の音</b>。前を強く「<b>ダ</b>ルフィン」（米）。l は舌先を上の歯ぐきに付けたまま f へ。" },
+    tip: "<b>ph は f の音</b>。前を強く「<b>ダ</b>ルフィン」（米）。l は舌先を上の歯ぐきに付けたまま f へ。",
+    fun: "イルカは<b>脳を半分ずつ眠らせる</b>ことができます。片方の目を開けたまま眠り、泳ぎながら息つぎを続けられます。" },
   { id: "penguin", word: "penguin", ja: "ペンギン",
     ipa: "/ˈpeŋɡwɪn/",
     syl: ["pen", "guin"], stress: [0],
-    tip: "「ペンギン」ではなく「<b>ペ</b>ングウィン」。<b>gw</b> の音で唇を丸めるのがポイント。" },
+    tip: "「ペンギン」ではなく「<b>ペ</b>ングウィン」。<b>gw</b> の音で唇を丸めるのがポイント。",
+    fun: "コウテイペンギンは<b>水深500m以上</b>まで潜れます。空は飛べませんが、海の中ではまさに「飛ぶように」泳ぎます。" },
   { id: "sea-turtle", word: "sea turtle", ja: "ウミガメ",
     ipa: "/ˈsiː ˌtɝːtl̩/",
     syl: ["sea", "tur", "tle"], stress: [0],
-    tip: "sea は「シー」ではなく <b>s の「スィー」</b>。turtle の tur は口をあまり開けずにこもった音、最後の tle は「トル」と軽く。" },
+    tip: "sea は「シー」ではなく <b>s の「スィー」</b>。turtle の tur は口をあまり開けずにこもった音、アメリカ英語では t がやわらかくなり、「<b>ター</b>ドゥル」に近く聞こえます。",
+    fun: "ウミガメは自分が生まれた砂浜を<b>地球の磁場</b>で覚えていて、大人になると何千kmも旅して同じ浜に戻り、卵を産みます。" },
   { id: "ray", word: "ray", ja: "エイ",
     ipa: "/reɪ/",
     syl: ["ray"], stress: [0],
-    tip: "<b>r は舌をどこにも付けず</b>、少し唇を丸めて「ゥレイ」。l（lay）と区別しましょう。" },
+    tip: "<b>r は舌をどこにも付けず</b>、少し唇を丸めて「ゥレイ」。l（lay）と区別しましょう。",
+    fun: "エイは<b>サメの親戚</b>。お腹側にある「笑った顔」のように見える部分は、実は鼻の穴と口。本当の目は背中側にあります。" },
   { id: "jellyfish", word: "jellyfish", ja: "クラゲ",
     ipa: "/ˈdʒelifɪʃ/",
     syl: ["jel", "ly", "fish"], stress: [0],
-    tip: "前を強く「<b>ジェ</b>リフィッシュ」。fish の f は上の歯を下唇に当てて。" },
+    tip: "前を強く「<b>ジェ</b>リフィッシュ」。fish の f は上の歯を下唇に当てて。",
+    fun: "クラゲには<b>脳も心臓も骨もありません</b>。体の約95%は水。ベニクラゲは若い姿に戻れるため「不老不死のクラゲ」と呼ばれます。" },
   { id: "hammerhead-shark", word: "hammerhead shark", ja: "シュモクザメ",
-    ipa: "/ˈhæmərhed ʃɑːrk/",
+    ipa: "/ˈhæmɚhed ˌʃɑːrk/",
     syl: ["ham", "mer", "head", "shark"], stress: [0],
-    tip: "ham の <b>æ</b> は「ア」と「エ」の中間。最初の ham を一番強く読みます。" },
+    tip: "ham の <b>æ</b> は「ア」と「エ」の中間。最初の ham を一番強く読みます。",
+    fun: "ハンマー型の頭は<b>金属探知機</b>のよう。砂の中に隠れたエイが出すかすかな電気を感じ取って見つけます。" },
   { id: "orca", word: "orca", ja: "シャチ",
     ipa: "/ˈɔːrkə/",
     syl: ["or", "ca"], stress: [0],
-    tip: "「オルカ」ではなく「<b>オー</b>rカ」。r で「ル」と言わず、舌を奥に引くだけ。" },
+    tip: "「オルカ」ではなく「<b>オー</b>rカ」。r で「ル」と言わず、舌を奥に引くだけ。",
+    fun: "英語では <b>killer whale</b>（殺し屋のクジラ）とも呼ばれますが、実は<b>イルカの仲間で最大</b>。群れごとに鳴き声の「方言」があります。" },
   { id: "mackerel", word: "mackerel", ja: "サバ",
     ipa: "/ˈmækrəl/",
     syl: ["mack", "erel"], stress: [0],
-    tip: "つづりは3音節に見えますが、実際は <b>2音節</b>で「<b>マ</b>クルル」に近い。真ん中の e はほぼ発音しません。" },
+    tip: "つづりは3音節に見えますが、実際は <b>2音節</b>で「<b>マ</b>クラル」に近い。真ん中の e はほぼ発音しません。",
+    fun: "英語の <b>“Holy mackerel!”</b> は「なんてこった！」「うそでしょ！」という驚きの表現。サバが出てくるのに魚とは関係ありません。" },
   { id: "clownfish", word: "clownfish", ja: "カクレクマノミ",
     ipa: "/ˈklaʊnfɪʃ/",
     syl: ["clown", "fish"], stress: [0],
-    tip: "clown は「クローン」ではなく「<b>クラウン</b>」。cl の間に母音を入れないように。" },
+    tip: "clown は「クローン」ではなく「<b>クラウン</b>」。cl の間に母音を入れないように。",
+    fun: "カクレクマノミは<b>みんなオスとして生まれ</b>、群れで一番大きな1匹がメスに変わります。イソギンチャクの毒は体のぬめりで防いでいます。" },
   { id: "sardine", word: "sardine", ja: "イワシ",
     ipa: "/sɑːrˈdiːn/",
     syl: ["sar", "dine"], stress: [1],
-    tip: "⚠️ <b>後ろを強く読む</b>のが最大のポイント！「サー<b>ディーン</b>」。日本語の「サーディン」とは強さの位置が違います。" },
+    tip: "⚠️ <b>後ろを強く読む</b>のが最大のポイント！「サー<b>ディーン</b>」。日本語の「サーディン」とは強さの位置が違います。",
+    fun: "英語の <b>“packed like sardines”</b> は「すし詰め」の意味。缶詰のイワシのようにぎゅうぎゅう、という例えです。" },
   { id: "bonito", word: "bonito", ja: "カツオ",
     ipa: "/bəˈniːtoʊ/",
     syl: ["bo", "ni", "to"], stress: [1],
-    tip: "⚠️ <b>真ん中の ni を強く</b>「ボ<b>ニー</b>トウ」。最初の bo は弱く短く。米音では t が軽い「ラ」に近くなることも。" },
+    tip: "⚠️ <b>真ん中の ni を強く</b>「ボ<b>ニー</b>トウ」。最初の bo は弱く短く。米音では t が軽い「ラ」に近くなることも。",
+    fun: "実は、日本の「カツオ」は英語で正確には <b>skipjack tuna</b>（マグロの仲間）。でも鰹節は英語で <b>bonito flakes</b> と呼ばれます。" },
 ];
 
 // ---- 状態 -------------------------------------------------------------
@@ -372,7 +394,8 @@ function openDetail(c) {
     </div>
     <div class="syl">${sylHTML(c)}</div>
     <div class="legend"><span style="color:var(--stress);font-weight:700">赤い下線</span> = 強く読むところ（アクセント）</div>
-    <div class="tip">💡 ${c.tip}</div>
+    <div class="tip">💡 <b>発音のコツ</b><br>${c.tip}</div>
+    <div class="fun">🐠 <b>おもしろ豆知識</b><br>${c.fun}</div>
     <div class="play-row">
       <button type="button" data-play>🔊 もう一度きく</button>
     </div>
@@ -382,6 +405,7 @@ function openDetail(c) {
   dlg.querySelector(".close").addEventListener("click", () => closeDialog());
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); // 古い端末向け
   document.body.classList.add("modal-open");
+  dlg.scrollTop = 0; // ボタンに自動で移るフォーカスで下にずれないよう、必ず一番上から表示
   speak(c); // 開いたときにまず1回再生
 }
 function closeDialog() {
