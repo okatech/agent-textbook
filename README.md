@@ -36,3 +36,5 @@ Generated with GitHub Copilot CLI × WorkIQ × Claude Opus 4.7
 
 **いちばん正確な発音で聞くには：** パソコンの Microsoft Edge がおすすめ（男女とも高品質なアメリカ英語の声）。
 iPhone は「設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語」で「拡張」「プレミアム」の声をダウンロードするとさらに自然になります。
+
+設計・引き継ぎ資料と、音声ファイル方式（Azure）への切り替え手順書：[`sea-creatures/HANDOFF.md`](./sea-creatures/HANDOFF.md)
