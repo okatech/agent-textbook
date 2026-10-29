@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>おさかなを英語で発音練習</title>
+<meta name="theme-color" content="#1f7fc4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="おさかな発音">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
 <style>
   :root {
     --bg: #eef7fc;
@@ -26,7 +32,13 @@
     margin: 0; background: var(--bg); color: var(--ink);
     font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
     line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
   }
+  /* スマホ向け：ボタンの連打で画面が拡大しない／タップ時の灰色の影を出さない */
+  button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  /* 長押しで画像保存メニューや文字選択が出ないようにする */
+  .card, .card img, .detail img { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  body.modal-open { overflow: hidden; }
   header { padding: 20px 16px 8px; max-width: 960px; margin: 0 auto; }
   h1 { font-size: 1.5rem; margin: 0 0 4px; }
   .credit { margin: 0 0 6px; font-size: .85rem; font-weight: 700; color: var(--accent); }
@@ -75,6 +87,7 @@
   dialog {
     border: 0; border-radius: 20px; padding: 0; width: min(520px, calc(100% - 32px));
     background: var(--card); color: var(--ink);
+    max-height: 90vh; max-height: 90dvh; overflow-y: auto; overscroll-behavior: contain;
   }
   dialog::backdrop { background: rgba(10, 30, 50, .55); }
   .detail { padding: 20px; }
@@ -287,7 +300,13 @@ function showVoiceInfo() {
     notes.push(`この端末ではアメリカ英語の${g}の声を選べないため、声の高さを変えて${g}らしくしています（発音は同じです）`);
   el.textContent = `🔈 再生する声：${voice.name.replace(/\s*[-(].*$/, "")}（アメリカ英語）` + (notes.length ? `　⚠️ ${notes.join("。")}` : "");
   if (langOf(voice) !== LANG.toLowerCase()) el.textContent = el.textContent.replace("（アメリカ英語）", `（${voice.lang}）`);
-  el.className = notes.length ? "voice-info sub" : "voice-info";
+  if (rateIgnored) {
+    el.textContent += "　⚠️ この端末は読み上げの速さの指定に従っていないようです。"
+      + (/Android/i.test(navigator.userAgent)
+          ? "Android の「設定 → ユーザー補助 → テキスト読み上げの出力」で速さを変えられます。"
+          : "端末の読み上げ設定をご確認ください。");
+  }
+  el.className = notes.length || rateIgnored ? "voice-info sub" : "voice-info";
 }
 
 // 選んだ性別のアメリカ英語の声のうち、一番自然な声を返す。
@@ -301,22 +320,44 @@ function pickVoice() {
 
 let current = null; // 再生中の音声（参照を持っておかないと Chrome で終了通知が届かないことがある）
 
+// 端末が「速さ」の指定に本当に従っているかを、実際の読み上げ時間で確かめる
+// （1文字あたりの読み上げ時間を、ゆっくり・ふつうそれぞれで記録して比べる）
+const timing = { slow: [], normal: [] };
+let rateIgnored = false;
+function recordTiming(rateKey, word, ms) {
+  if (ms < 150 || ms > 8000) return; // 途中で止めた・測れなかったものは除く
+  timing[rateKey].push(ms / word.length);
+  if (!timing.slow.length || !timing.normal.length) return;
+  const avg = a => a.reduce((x, y) => x + y, 0) / a.length;
+  rateIgnored = avg(timing.slow) < avg(timing.normal) * 1.25;
+  showVoiceInfo();
+}
+
 function speak(creature, rateKey, cardEl) {
   if (!synth) return;
   if (!voices.length) loadVoices(); // 声の一覧がまだ届いていない端末向け
   const { voice, pitch } = pickVoice();
+  const key = rateKey || state.rate;
   const u = new SpeechSynthesisUtterance(creature.word);
   u.lang = voice ? voice.lang.replace("_", "-") : LANG; // 声と言語の指定を一致させる（食い違うと端末が別の声に差し替えることがある）
   if (voice) u.voice = voice;
-  u.rate = RATES[rateKey || state.rate];
+  u.rate = RATES[key];
   u.pitch = voice ? pitch : 1;
   document.querySelectorAll(".card.playing").forEach(c => c.classList.remove("playing"));
   if (cardEl) cardEl.classList.add("playing");
-  u.onend = u.onerror = () => {
+  let started = 0;
+  u.onstart = () => { started = performance.now(); };
+  const finish = ok => {
     if (current !== u) return; // 止めた古い音声の通知で、新しいカードの表示を消さない
     current = null;
+    clearTimeout(safety);
     if (cardEl) cardEl.classList.remove("playing");
+    if (ok && started) recordTiming(key, creature.word, performance.now() - started);
   };
+  u.onend = () => finish(true);
+  u.onerror = () => finish(false);
+  // Android では終了の通知が来ないことがあるため、一定時間で「再生中」表示を必ず消す
+  const safety = setTimeout(() => finish(false), 6000);
   const busy = synth.speaking || synth.pending;
   current = u;
   synth.cancel(); // 前の音声を止めてから再生
@@ -376,13 +417,20 @@ function openDetail(c) {
   const dlg = document.getElementById("dlg");
   dlg.querySelectorAll("[data-r]").forEach(b =>
     b.addEventListener("click", () => speak(c, b.dataset.r)));
-  dlg.querySelector(".close").addEventListener("click", () => dlg.close());
-  dlg.showModal();
+  dlg.querySelector(".close").addEventListener("click", () => closeDialog());
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); // 古い端末向け
+  document.body.classList.add("modal-open");
   speak(c, "slow"); // 開いたときはまずゆっくり
 }
+function closeDialog() {
+  const dlg = document.getElementById("dlg");
+  if (dlg.close) dlg.close(); else dlg.removeAttribute("open");
+  document.body.classList.remove("modal-open");
+}
 document.getElementById("dlg").addEventListener("click", e => {
-  if (e.target.id === "dlg") e.target.close(); // 背景タップで閉じる
+  if (e.target.id === "dlg") closeDialog(); // 背景タップで閉じる
 });
+document.getElementById("dlg").addEventListener("close", () => document.body.classList.remove("modal-open"));
 
 function syncButtons() {
   document.querySelectorAll("[data-rate]").forEach(b =>
@@ -409,6 +457,20 @@ if (!synth) {
   loadVoices();
   // 音声リストは後から読み込まれるブラウザがあるため、届いたら作り直す
   synth.onvoiceschanged = loadVoices;
+  // iPhone では通知が来ないことがあるので、最初の数秒は自分で取りに行く
+  let tries = 0;
+  const poll = setInterval(() => {
+    if (synth.getVoices().length !== voices.length) loadVoices();
+    if (++tries >= 10) clearInterval(poll);
+  }, 300);
+  // 別のアプリに切り替えたら読み上げを止める（戻ったときに固まるのを防ぐ）
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { current = null; synth.cancel(); } });
+}
+// LINE・Instagram などのアプリ内ブラウザは読み上げが不安定なので案内を出す
+if (/Line\/|FBAN|FBAV|Instagram|Twitter|MicroMessenger|KAKAOTALK/i.test(navigator.userAgent)) {
+  const w = document.getElementById("warn");
+  w.textContent = "アプリ内のブラウザでは音声が正しく再生されないことがあります。右上のメニューから「Safari で開く」/「Chrome で開く」を選んでください。";
+  w.style.display = "block";
 }
 </script>
 </body>
