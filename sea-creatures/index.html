@@ -131,15 +131,6 @@
     </div>
   </div>
   <div class="group">
-    <span>アクセント</span>
-    <div class="seg" role="group" aria-label="アクセント">
-      <button type="button" data-accent="US" aria-pressed="true" aria-label="アメリカ">🇺🇸 米国</button>
-      <button type="button" data-accent="UK" aria-pressed="false" aria-label="イギリス">🇬🇧 英国</button>
-      <button type="button" data-accent="AU" aria-pressed="false" aria-label="オーストラリア">🇦🇺 豪州</button>
-      <button type="button" data-accent="IN" aria-pressed="false" aria-label="インド">🇮🇳 インド</button>
-    </div>
-  </div>
-  <div class="group">
     <span>声</span>
     <div class="seg" role="group" aria-label="声">
       <button type="button" data-gender="female" aria-pressed="true">👩 女性</button>
@@ -157,14 +148,14 @@
 </main>
 
 <section class="notice">
-  <p>※ 音声はお使いの端末に入っている英語音声（読み上げエンジン）で再生されます。
+  <p>※ 発音はアメリカ英語です。音声はお使いの端末に入っている英語音声（読み上げエンジン）で再生されます。
   端末に入っている声の中から、なるべく自然に聞こえる女性・男性の声を自動で選びます。</p>
   <h2>🎧 いちばん正確な発音で聞くには</h2>
   <table>
     <tr><th>端末</th><th>使える声</th></tr>
-    <tr><td>パソコンの <b>Microsoft Edge</b>（おすすめ）</td><td>✅ 4アクセント×男女すべて高品質な声</td></tr>
-    <tr><td>iPhone / Mac（Safari）</td><td>✅ 米国・英国・豪州。インドの女性の声は端末にダウンロードが必要</td></tr>
-    <tr><td>パソコンの Chrome</td><td>△ 米国女性・英国男女のみ。それ以外はイギリス英語の声で代わりに再生</td></tr>
+    <tr><td>パソコンの <b>Microsoft Edge</b>（おすすめ）</td><td>✅ 男女とも高品質なアメリカ英語の声</td></tr>
+    <tr><td>iPhone / Mac（Safari）</td><td>✅ 男女ともアメリカ英語の声</td></tr>
+    <tr><td>パソコンの Chrome</td><td>△ 女性の声のみ。男性は声の高さで切り替え（発音は同じ）</td></tr>
     <tr><td>Android</td><td>△ 男女を選べないため、声の高さで切り替え（発音は同じ）</td></tr>
   </table>
   <p>iPhone では「設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語」から
@@ -178,56 +169,56 @@
 
 <script>
 // ---- 生き物データ -------------------------------------------------------
-// ipa : アクセント別の発音記号（US/UK は辞書の表記、AU/IN は各地域の標準的な発音の目安）
+// ipa : アメリカ英語の発音記号（辞書の表記に準拠）
 // syl           : 音節の区切り。stress が強く読む音節の番号（0始まり）
 // tip           : 日本人が間違えやすいポイント
 const CREATURES = [
   { id: "shark", word: "shark", ja: "サメ",
-    ipa: { US: "/ʃɑːrk/", UK: "/ʃɑːk/", AU: "/ʃɐːk/", IN: "/ʃaːrk/" },
+    ipa: "/ʃɑːrk/",
     syl: ["shark"], stress: [0],
     tip: "「シャーク」より口を大きく開けて <b>ʃɑː</b>。最後の k は息だけで、「ク」と母音を付けないのがコツ。" },
   { id: "dolphin", word: "dolphin", ja: "イルカ",
-    ipa: { US: "/ˈdɑːlfɪn/", UK: "/ˈdɒlfɪn/", AU: "/ˈdɔlfɪn/", IN: "/ˈɖɔlfin/" },
+    ipa: "/ˈdɑːlfɪn/",
     syl: ["dol", "phin"], stress: [0],
     tip: "<b>ph は f の音</b>。前を強く「<b>ダ</b>ルフィン」（米）。l は舌先を上の歯ぐきに付けたまま f へ。" },
   { id: "penguin", word: "penguin", ja: "ペンギン",
-    ipa: { US: "/ˈpeŋɡwɪn/", UK: "/ˈpeŋɡwɪn/", AU: "/ˈpeŋɡwɪn/", IN: "/ˈpeŋɡʋin/" },
+    ipa: "/ˈpeŋɡwɪn/",
     syl: ["pen", "guin"], stress: [0],
     tip: "「ペンギン」ではなく「<b>ペ</b>ングウィン」。<b>gw</b> の音で唇を丸めるのがポイント。" },
   { id: "sea-turtle", word: "sea turtle", ja: "ウミガメ",
-    ipa: { US: "/ˈsiː ˌtɝːtl̩/", UK: "/ˈsiː ˌtɜːtl̩/", AU: "/ˈsiː ˌtɜːtl̩/", IN: "/ˈsiː ˈʈəːʈl/" },
+    ipa: "/ˈsiː ˌtɝːtl̩/",
     syl: ["sea", "tur", "tle"], stress: [0],
     tip: "sea は「シー」ではなく <b>s の「スィー」</b>。turtle の tur は口をあまり開けずにこもった音、最後の tle は「トル」と軽く。" },
   { id: "ray", word: "ray", ja: "エイ",
-    ipa: { US: "/reɪ/", UK: "/reɪ/", AU: "/ræɪ/", IN: "/reː/" },
+    ipa: "/reɪ/",
     syl: ["ray"], stress: [0],
     tip: "<b>r は舌をどこにも付けず</b>、少し唇を丸めて「ゥレイ」。l（lay）と区別しましょう。" },
   { id: "jellyfish", word: "jellyfish", ja: "クラゲ",
-    ipa: { US: "/ˈdʒelifɪʃ/", UK: "/ˈdʒelifɪʃ/", AU: "/ˈdʒelifɪʃ/", IN: "/ˈdʒelifiʃ/" },
+    ipa: "/ˈdʒelifɪʃ/",
     syl: ["jel", "ly", "fish"], stress: [0],
     tip: "前を強く「<b>ジェ</b>リフィッシュ」。fish の f は上の歯を下唇に当てて。" },
   { id: "hammerhead-shark", word: "hammerhead shark", ja: "シュモクザメ",
-    ipa: { US: "/ˈhæmərhed ʃɑːrk/", UK: "/ˈhæməhed ʃɑːk/", AU: "/ˈhæməhed ʃɐːk/", IN: "/ˈhæmərheɖ ʃaːrk/" },
+    ipa: "/ˈhæmərhed ʃɑːrk/",
     syl: ["ham", "mer", "head", "shark"], stress: [0],
     tip: "ham の <b>æ</b> は「ア」と「エ」の中間。最初の ham を一番強く読みます。" },
   { id: "orca", word: "orca", ja: "シャチ",
-    ipa: { US: "/ˈɔːrkə/", UK: "/ˈɔːkə/", AU: "/ˈoːkə/", IN: "/ˈɔːrka/" },
+    ipa: "/ˈɔːrkə/",
     syl: ["or", "ca"], stress: [0],
     tip: "「オルカ」ではなく「<b>オー</b>rカ」。r で「ル」と言わず、舌を奥に引くだけ。" },
   { id: "mackerel", word: "mackerel", ja: "サバ",
-    ipa: { US: "/ˈmækrəl/", UK: "/ˈmækrəl/", AU: "/ˈmækrəl/", IN: "/ˈmækrəl/" },
+    ipa: "/ˈmækrəl/",
     syl: ["mack", "erel"], stress: [0],
     tip: "つづりは3音節に見えますが、実際は <b>2音節</b>で「<b>マ</b>クルル」に近い。真ん中の e はほぼ発音しません。" },
   { id: "clownfish", word: "clownfish", ja: "カクレクマノミ",
-    ipa: { US: "/ˈklaʊnfɪʃ/", UK: "/ˈklaʊnfɪʃ/", AU: "/ˈklæɔnfɪʃ/", IN: "/ˈklaʊnfiʃ/" },
+    ipa: "/ˈklaʊnfɪʃ/",
     syl: ["clown", "fish"], stress: [0],
     tip: "clown は「クローン」ではなく「<b>クラウン</b>」。cl の間に母音を入れないように。" },
   { id: "sardine", word: "sardine", ja: "イワシ",
-    ipa: { US: "/sɑːrˈdiːn/", UK: "/sɑːˈdiːn/", AU: "/sɐːˈdiːn/", IN: "/saːrˈɖiːn/" },
+    ipa: "/sɑːrˈdiːn/",
     syl: ["sar", "dine"], stress: [1],
     tip: "⚠️ <b>後ろを強く読む</b>のが最大のポイント！「サー<b>ディーン</b>」。日本語の「サーディン」とは強さの位置が違います。" },
   { id: "bonito", word: "bonito", ja: "カツオ",
-    ipa: { US: "/bəˈniːtoʊ/", UK: "/bəˈniːtəʊ/", AU: "/bəˈniːtəʉ/", IN: "/boˈniːʈoː/" },
+    ipa: "/bəˈniːtoʊ/",
     syl: ["bo", "ni", "to"], stress: [1],
     tip: "⚠️ <b>真ん中の ni を強く</b>「ボ<b>ニー</b>トウ」。最初の bo は弱く短く。米音では t が軽い「ラ」に近くなることも。" },
 ];
@@ -235,11 +226,10 @@ const CREATURES = [
 // ---- 状態 -------------------------------------------------------------
 // ゆっくり＝ふつうの約半分の速さ（差が小さいと1単語では聞き分けにくいため大きめに差をつける）
 const RATES = { slow: 0.45, normal: 1.0 };
-const state = { rate: "normal", accent: "US", gender: "female" };
+const state = { rate: "normal", gender: "female" };
 try {
   const saved = JSON.parse(localStorage.getItem("seaPron") || "{}");
   if (saved.rate in RATES) state.rate = saved.rate;
-  if (["US", "UK", "AU", "IN"].includes(saved.accent)) state.accent = saved.accent;
   if (["female", "male"].includes(saved.gender)) state.gender = saved.gender;
 } catch (e) {}
 function save() {
@@ -262,14 +252,7 @@ function voiceScore(v) {
   if (/compact|novelty|whisper|bells|bad news|jester|zarvox|trinoids|bubbles|boing|cellos|organ|albert|superstar|wobble|good news|hysterical/.test(n)) s -= 100;
   return s;
 }
-const ACCENTS = {
-  US: { lang: "en-US", flag: "🇺🇸", name: "アメリカ英語" },
-  UK: { lang: "en-GB", flag: "🇬🇧", name: "イギリス英語" },
-  AU: { lang: "en-AU", flag: "🇦🇺", name: "オーストラリア英語" },
-  IN: { lang: "en-IN", flag: "🇮🇳", name: "インド英語" },
-};
-const accentOfLang = l => Object.values(ACCENTS).find(a => a.lang.toLowerCase() === l);
-function accentLang() { return ACCENTS[state.accent].lang; }
+const LANG = "en-US"; // 発音はアメリカ英語のみ
 
 // 声の名前から性別を判定（ブラウザは性別情報をくれないため、主要な声の名前で見分ける）
 const FEMALE = /female|flo\b|sandy|shelley|grandma|samantha|ava\b|natasha|catherine|annette|carly|elsie|freya|joanne|kim\b|tina\b|veena|neerja|heera|isha\b|allison|susan|victoria|zoe|nicky|kate|serena|stephanie|martha|moira|tessa|karen|fiona|aria|jenny|zira|libby|sonia|hazel|michelle|emma|ana\b|ashley|cora|elizabeth|jane|monica|nancy|sara|amber|maisie|mia\b|google us english/;
@@ -289,39 +272,31 @@ function loadVoices() {
   showVoiceInfo();
 }
 const langOf = v => v.lang.replace("_", "-").toLowerCase();
-// 英国の女性の声がない端末向けに、発音が近い地域の声を次の候補にする
-const NEAR = { US: ["en-ca"], UK: ["en-ie", "en-au", "en-nz", "en-za"], AU: ["en-nz", "en-gb"], IN: ["en-gb"] };
 
 // 今どの声で再生されるかを画面に表示する（代わりの声のときは正直に伝える）
 function showVoiceInfo() {
   const el = document.getElementById("voiceInfo");
   if (!synth) return;
   const { voice, pitch } = pickVoice();
-  const want = ACCENTS[state.accent];
   const g = state.gender === "female" ? "女性" : "男性";
   if (!voice) { el.textContent = "🔈 端末の標準の英語音声で再生します"; el.className = "voice-info"; return; }
-  const got = accentOfLang(langOf(voice));
-  const label = `${voice.name.replace(/\s*[-(].*$/, "")}（${got ? got.name : voice.lang}）`;
   const notes = [];
-  if (langOf(voice) !== want.lang.toLowerCase())
-    notes.push(`この端末には${want.name}の${g}の声がないため、近い発音の声で代わりに再生しています`);
-  if (pitch !== 1)
-    notes.push(`この端末では声の性別を選べないため、声の高さを変えて${g}らしくしています（発音は同じです）`);
-  el.textContent = `🔈 再生する声：${label}` + (notes.length ? `　⚠️ ${notes.join("。")}` : "");
+  if (langOf(voice) !== LANG.toLowerCase())
+    notes.push("この端末にはアメリカ英語の声がないため、別の英語の声で代わりに再生しています");
+  else if (pitch !== 1)
+    notes.push(`この端末ではアメリカ英語の${g}の声を選べないため、声の高さを変えて${g}らしくしています（発音は同じです）`);
+  el.textContent = `🔈 再生する声：${voice.name.replace(/\s*[-(].*$/, "")}（アメリカ英語）` + (notes.length ? `　⚠️ ${notes.join("。")}` : "");
+  if (langOf(voice) !== LANG.toLowerCase()) el.textContent = el.textContent.replace("（アメリカ英語）", `（${voice.lang}）`);
   el.className = notes.length ? "voice-info sub" : "voice-info";
 }
 
-// 選んだアクセント・性別に一番合う声を返す。
-// ①同じアクセント＆性別 → ②近いアクセント＆性別 → ③英語の同じ性別 → ④声の高さで調整
+// 選んだ性別のアメリカ英語の声のうち、一番自然な声を返す。
+// 見つからない端末では、アメリカ英語の声の高さ（pitch）を変えて男女の違いを出す。
 function pickVoice() {
-  const lang = accentLang().toLowerCase();
-  const sameGender = voices.filter(v => genderOf(v) === state.gender);
-  const match = sameGender.find(v => langOf(v) === lang)
-             || sameGender.find(v => NEAR[state.accent].includes(langOf(v)))
-             || sameGender[0];
+  const us = voices.filter(v => langOf(v) === LANG.toLowerCase());
+  const match = us.find(v => genderOf(v) === state.gender);
   if (match) return { voice: match, pitch: 1 };
-  const base = voices.find(v => langOf(v) === lang) || voices[0];
-  return { voice: base, pitch: state.gender === "male" ? 0.8 : 1.15 };
+  return { voice: us[0] || voices[0], pitch: state.gender === "male" ? 0.8 : 1.15 };
 }
 
 let current = null; // 再生中の音声（参照を持っておかないと Chrome で終了通知が届かないことがある）
@@ -331,7 +306,7 @@ function speak(creature, rateKey, cardEl) {
   if (!voices.length) loadVoices(); // 声の一覧がまだ届いていない端末向け
   const { voice, pitch } = pickVoice();
   const u = new SpeechSynthesisUtterance(creature.word);
-  u.lang = voice ? voice.lang.replace("_", "-") : accentLang(); // 声と言語の指定を一致させる（食い違うと端末が別の声に差し替えることがある）
+  u.lang = voice ? voice.lang.replace("_", "-") : LANG; // 声と言語の指定を一致させる（食い違うと端末が別の声に差し替えることがある）
   if (voice) u.voice = voice;
   u.rate = RATES[rateKey || state.rate];
   u.pitch = voice ? pitch : 1;
@@ -381,14 +356,13 @@ function sylHTML(c) {
 }
 
 function openDetail(c) {
-  const ipa = c.ipa[state.accent];
   document.getElementById("detail").innerHTML = `
     <div class="detail-top">
       <img src="img/${c.id}.png" alt="${c.ja}">
       <div>
         <h2>${c.word}</h2>
         <div class="ja">${c.ja}</div>
-        <div class="ipa">${ACCENTS[state.accent].flag} ${ipa}</div>
+        <div class="ipa">🇺🇸 ${c.ipa}</div>
       </div>
     </div>
     <div class="syl">${sylHTML(c)}</div>
@@ -413,18 +387,12 @@ document.getElementById("dlg").addEventListener("click", e => {
 function syncButtons() {
   document.querySelectorAll("[data-rate]").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.rate === state.rate)));
-  document.querySelectorAll("[data-accent]").forEach(b =>
-    b.setAttribute("aria-pressed", String(b.dataset.accent === state.accent)));
   document.querySelectorAll("[data-gender]").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.gender === state.gender)));
 }
 document.querySelectorAll("[data-rate]").forEach(b => b.addEventListener("click", () => {
   state.rate = b.dataset.rate; save(); syncButtons();
   speak(CREATURES[0]); // 選んだ速さを試聴
-}));
-document.querySelectorAll("[data-accent]").forEach(b => b.addEventListener("click", () => {
-  state.accent = b.dataset.accent; save(); syncButtons(); showVoiceInfo();
-  speak(CREATURES[0]); // 選んだアクセントを試聴
 }));
 document.querySelectorAll("[data-gender]").forEach(b => b.addEventListener("click", () => {
   state.gender = b.dataset.gender; save(); syncButtons(); showVoiceInfo();
