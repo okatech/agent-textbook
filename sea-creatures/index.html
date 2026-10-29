@@ -17,14 +17,17 @@
     --ink: #1d2b3a;
     --sub: #5b6b7c;
     --accent: #1f7fc4;
+    --on-accent: #ffffff;   /* 青いボタンの上の文字色 */
     --accent-soft: #d8ecf9;
     --stress: #e0484f;
     --border: #bcdcf0;
+    --note-bg: #fff4d6; --note-ink: #4a3800; --note-strong: #b25e00;
   }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
+    :root {
       --bg: #0f1a24; --card: #182634; --ink: #e8f0f7; --sub: #9fb1c3;
-      --accent: #5cb3ee; --accent-soft: #1d3a52; --stress: #ff7b80; --border: #2a4257;
+      --accent: #5cb3ee; --on-accent: #0f1a24; --accent-soft: #1d3a52; --stress: #ff7b80; --border: #2a4257;
+      --note-bg: #3a2f12; --note-ink: #f3e6c4; --note-strong: #ffb84d;
     }
   }
   * { box-sizing: border-box; }
@@ -35,7 +38,7 @@
     -webkit-text-size-adjust: 100%;
   }
   /* スマホ向け：ボタンの連打で画面が拡大しない／タップ時の灰色の影を出さない */
-  button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; font: inherit; cursor: pointer; }
   /* 長押しで画像保存メニューや文字選択が出ないようにする */
   .card, .card img, .detail img { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   body.modal-open { overflow: hidden; }
@@ -44,96 +47,72 @@
   .credit { margin: 0 0 6px; font-size: .85rem; font-weight: 700; color: var(--accent); }
   .lead { color: var(--sub); margin: 0; font-size: .95rem; }
 
+  /* ボタンの共通スタイル（すべて丸いピル型・高さ44px以上） */
+  .btn {
+    display: block; width: 100%; min-height: 44px; border-radius: 999px; font-weight: 700;
+    border: 2px solid var(--accent); background: var(--card); color: var(--accent);
+  }
+  .btn:active { background: var(--accent-soft); }
+  .btn.primary { background: var(--accent); color: var(--on-accent); min-height: 52px; font-size: 1.05rem; }
+
   .controls {
     position: sticky; top: 0; z-index: 5; background: var(--bg);
-    max-width: 960px; margin: 0 auto; padding: 10px 16px;
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(310px, 100%), 1fr)); gap: 8px 20px;
-    border-bottom: 1px solid var(--border);
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
   }
-  /* 3つの設定をすべて同じ形・同じ大きさにそろえる */
-  .group { display: grid; grid-template-columns: 5em 1fr; align-items: center; gap: 8px; }
-  .group > span { font-size: .9rem; font-weight: 700; color: var(--sub); }
-  .seg { display: flex; border: 2px solid var(--accent); border-radius: 999px; overflow: hidden; }
-  .seg button {
-    flex: 1; min-height: 44px; border: 0; background: transparent; color: var(--accent); font: inherit;
-    font-weight: 700; padding: 0 8px; cursor: pointer; white-space: nowrap;
-  }
+  .seg { display: flex; max-width: 360px; margin: 0 auto; border: 2px solid var(--accent); border-radius: 999px; overflow: hidden; }
+  .seg button { flex: 1; min-height: 44px; border: 0; background: transparent; color: var(--accent); font-weight: 700; }
   .seg button + button { border-left: 2px solid var(--accent); }
-  @media (max-width: 520px) {
-    /* スマホでは見出しをボタンの上に置き、ボタンを横いっぱいに使う */
-    .group { grid-template-columns: 1fr; gap: 2px; }
-    .seg button { padding: 0 2px; font-size: .9rem; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+  .note {
+    max-width: 928px; margin: 12px auto 0; padding: 10px 14px; border-radius: 10px;
+    background: var(--note-bg); color: var(--note-ink); font-size: .9rem;
   }
-  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .note[hidden] { display: none; }
 
   main { max-width: 960px; margin: 0 auto; padding: 16px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
-  .grid > div { display: flex; flex-direction: column; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .grid > div { display: flex; flex-direction: column; gap: 6px; }
   .card {
-    flex: 1;
-    background: var(--card); border: 2px solid var(--border); border-radius: 16px;
-    padding: 10px; text-align: center; cursor: pointer; font: inherit; color: inherit;
-    transition: transform .12s, border-color .12s;
+    flex: 1; background: var(--card); border: 2px solid var(--border); border-radius: 16px;
+    padding: 10px; text-align: center; color: inherit; transition: transform .12s, border-color .12s;
   }
-  .card:hover { border-color: var(--accent); }
   .card:active { transform: scale(.97); }
   .card.playing { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-  .card img { width: 100%; max-width: 140px; aspect-ratio: 1; object-fit: contain;
-              background: #fff; border-radius: 10px; }
-  .card .word { font-size: 1.2rem; font-weight: 700; margin-top: 4px; }
+  .card img { width: 100%; max-width: 140px; aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 10px; }
+  .card .word { font-size: 1.15rem; font-weight: 700; margin-top: 4px; line-height: 1.3; }
   .card .ja { font-size: .8rem; color: var(--sub); }
 
-  /* Detail panel */
+  /* 詳細画面 */
   dialog {
     border: 0; border-radius: 20px; padding: 0; width: min(520px, calc(100% - 32px));
     background: var(--card); color: var(--ink);
     max-height: 90vh; max-height: 90dvh; overflow-y: auto; overscroll-behavior: contain;
   }
   dialog::backdrop { background: rgba(10, 30, 50, .55); }
-  .detail { padding: 20px; }
+  .detail { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
   .detail-top { display: flex; gap: 16px; align-items: center; }
-  .detail img { width: 120px; height: 120px; object-fit: contain; background: #fff; border-radius: 12px; flex-shrink: 0; }
-  .detail h2 { margin: 0; font-size: 1.8rem; line-height: 1.2; }
+  .detail-top > div { min-width: 0; }
+  .detail img { width: 110px; height: 110px; object-fit: contain; background: #fff; border-radius: 12px; flex-shrink: 0; }
+  .detail h2 { margin: 0; font-size: clamp(1.2rem, 6vw, 1.7rem); line-height: 1.2; overflow-wrap: break-word; }
   .detail .ja { color: var(--sub); }
-  .ipa { font-family: "Charis SIL", "Doulos SIL", "Lucida Sans Unicode", "Segoe UI", serif;
-         font-size: 1.15rem; margin-top: 4px; }
-  .syl { margin: 16px 0 6px; font-size: 1.6rem; font-weight: 700; letter-spacing: .02em; }
-  .syl .s { padding: 0 2px; }
+  .ipa { font-family: "Charis SIL", "Doulos SIL", "Lucida Sans Unicode", "Segoe UI", serif; font-size: 1.15rem; margin-top: 4px; }
+  .syl { font-size: 1.6rem; font-weight: 700; }
   .syl .s.st { color: var(--stress); text-decoration: underline; text-underline-offset: 6px; }
-  .syl .dot { color: var(--sub); font-weight: 400; }
-  .legend { font-size: .8rem; color: var(--sub); }
-  .tip { background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; margin: 14px 0; font-size: .95rem; }
+  .syl .dot { color: var(--sub); font-weight: 400; padding: 0 4px; }
+  .legend { font-size: .8rem; color: var(--sub); margin-top: -8px; }
+  .box { border-radius: 12px; padding: 12px 14px; font-size: .95rem; }
+  .tip { background: var(--accent-soft); }
   .tip b { color: var(--accent); }
+  .fun { background: var(--note-bg); color: var(--note-ink); }
+  .fun b { color: var(--note-strong); }
   @media (max-width: 520px) {
     .detail { padding: 16px; }
-    .detail img { width: 96px; height: 96px; }
-    .detail h2 { font-size: 1.5rem; }
-    .syl { margin-top: 10px; }
+    .detail img { width: 90px; height: 90px; }
   }
-  .fun { background: #fff4d6; color: #4a3800; border-radius: 12px; padding: 12px 14px; margin: -4px 0 14px; font-size: .95rem; }
-  .fun b { color: #b25e00; }
-  @media (prefers-color-scheme: dark) { .fun { background: #3a2f12; color: #f3e6c4; } .fun b { color: #ffb84d; } }
-  .play-row { display: flex; gap: 10px; }
-  .play-row button {
-    flex: 1; min-height: 52px; border: 2px solid var(--accent); border-radius: 12px; padding: 14px 8px; font: inherit; font-weight: 700;
-    font-size: 1rem; cursor: pointer; background: var(--accent); color: #fff;
-  }
-  .more {
-    width: 100%; min-height: 44px; margin-top: 6px; border: 2px solid var(--accent); border-radius: 999px;
-    background: var(--card); color: var(--accent); font: inherit; font-weight: 700; cursor: pointer;
-  }
-  .more:active { background: var(--accent-soft); }
-  .close { margin-top: 12px; width: 100%; background: transparent; border: 0; color: var(--sub);
-           font: inherit; padding: 8px; cursor: pointer; }
 
-  .voice-info { max-width: 960px; margin: 0 auto; padding: 8px 16px 0; font-size: .85rem; color: var(--sub); }
-  .voice-info.sub { color: #9a6700; }
   .notice { max-width: 960px; margin: 0 auto; padding: 0 16px 24px; font-size: .85rem; color: var(--sub); }
   .notice h2 { font-size: 1rem; color: var(--ink); margin: 16px 0 6px; }
-  .notice table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
-  .notice th, .notice td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  .notice th { color: var(--ink); background: var(--accent-soft); }
-  .warn { background: #fff4d6; color: #6b4e00; border-radius: 10px; padding: 10px 14px; margin: 0 16px 12px; display: none; }
 </style>
 </head>
 <body>
@@ -144,37 +123,24 @@
 </header>
 
 <div class="controls">
-  <div class="group">
-    <span>声</span>
-    <div class="seg" role="group" aria-label="声">
-      <button type="button" data-gender="female" aria-pressed="true">👩 女性</button>
-      <button type="button" data-gender="male" aria-pressed="false">👨 男性</button>
-    </div>
+  <div class="seg" role="group" aria-label="声">
+    <button type="button" data-gender="female" aria-pressed="true">👩 女性の声</button>
+    <button type="button" data-gender="male" aria-pressed="false">👨 男性の声</button>
   </div>
 </div>
 
-<div class="voice-info" id="voiceInfo" aria-live="polite"></div>
-
-<p class="warn" id="warn"></p>
+<p class="note" id="note" hidden></p>
 
 <main>
   <div class="grid" id="grid"></div>
 </main>
 
 <section class="notice">
-  <p>※ 発音はアメリカ英語です。音声はお使いの端末に入っている英語音声（読み上げエンジン）で再生されます。
-  端末に入っている声の中から、なるべく自然に聞こえる女性・男性の声を自動で選びます。</p>
-  <h2>🎧 いちばん正確な発音で聞くには</h2>
-  <table>
-    <tr><th>端末</th><th>使える声</th></tr>
-    <tr><td>パソコンの <b>Microsoft Edge</b>（おすすめ）</td><td>✅ 男女とも高品質なアメリカ英語の声</td></tr>
-    <tr><td>iPhone / Mac（Safari）</td><td>✅ 男女ともアメリカ英語の声</td></tr>
-    <tr><td>パソコンの Chrome</td><td>△ 女性の声のみ。男性は声の高さで切り替え（発音は同じ）</td></tr>
-    <tr><td>Android</td><td>△ 男女を選べないため、声の高さで切り替え（発音は同じ）</td></tr>
-  </table>
-  <p>iPhone では「設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語」から
-  <b>「拡張」「プレミアム」</b>の声をダウンロードすると、さらに自然な発音になります。
-  代わりの声で再生しているときは、画面上部に ⚠️ で表示されます。</p>
+  <p>※ 発音はアメリカ英語です。音声はお使いのスマホに入っている読み上げ機能で再生されます。</p>
+  <h2>🎧 より自然な声で聞くには</h2>
+  <p><b>iPhone：</b>「設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語」から、
+  <b>「拡張」「プレミアム」</b>の声をダウンロードすると、さらに自然な発音になります。</p>
+  <p><b>Android：</b>男性・女性の声を選べない機種では、声の高さを変えて切り替えます（発音は同じです）。</p>
 </section>
 
 <dialog id="dlg">
@@ -191,8 +157,8 @@ const CREATURES = [
   { id: "shark", word: "shark", ja: "サメ",
     ipa: "/ʃɑːrk/",
     syl: ["shark"], stress: [0],
-    tip: "「シャーク」より口を大きく開けて <b>ʃɑː</b>。最後の k は息だけで、「ク」と母音を付けないのがコツ。",
-    fun: "サメには<b>骨がありません</b>。体を支えているのは全部やわらかい「軟骨」。歯は一生生え変わり続け、一生で数万本も使う種類もいます。" },
+    tip: "「シャーク」より口を大きく開けて <b>ʃɑː</b>、そのまま舌を奥に引いて <b>r</b> の響きを付けます。最後の k は息だけで、「ク」と母音を付けないのがコツ。",
+    fun: "サメには<b>骨がありません</b>。体を支えているのは、骨よりも軽くてしなやかな「軟骨」。歯は一生生え変わり続け、一生で数万本も使う種類もいます。" },
   { id: "dolphin", word: "dolphin", ja: "イルカ",
     ipa: "/ˈdɑːlfɪn/",
     syl: ["dol", "phin"], stress: [0],
@@ -231,7 +197,7 @@ const CREATURES = [
   { id: "mackerel", word: "mackerel", ja: "サバ",
     ipa: "/ˈmækrəl/",
     syl: ["mack", "erel"], stress: [0],
-    tip: "つづりは3音節に見えますが、実際は <b>2音節</b>で「<b>マ</b>クラル」に近い。真ん中の e はほぼ発音しません。",
+    tip: "つづりは3音節ですが、アメリカ英語では <b>2音節</b>で「<b>マ</b>クラル」と読まれることが多く、真ん中の e はとても弱くなります。",
     fun: "英語の <b>“Holy mackerel!”</b> は「なんてこった！」「うそでしょ！」という驚きの表現。サバが出てくるのに魚とは関係ありません。" },
   { id: "clownfish", word: "clownfish", ja: "カクレクマノミ",
     ipa: "/ˈklaʊnfɪʃ/",
@@ -241,20 +207,20 @@ const CREATURES = [
   { id: "sardine", word: "sardine", ja: "イワシ",
     ipa: "/sɑːrˈdiːn/",
     syl: ["sar", "dine"], stress: [1],
-    tip: "⚠️ <b>後ろを強く読む</b>のが最大のポイント！「サー<b>ディーン</b>」。日本語の「サーディン」とは強さの位置が違います。",
+    tip: "<b>後ろを強く読む</b>のが最大のポイント！「サー<b>ディーン</b>」。日本語の「サーディン」とは強さの位置が違います。",
     fun: "英語の <b>“packed like sardines”</b> は「すし詰め」の意味。缶詰のイワシのようにぎゅうぎゅう、という例えです。" },
   { id: "bonito", word: "bonito", ja: "カツオ",
     ipa: "/bəˈniːtoʊ/",
     syl: ["bo", "ni", "to"], stress: [1],
-    tip: "⚠️ <b>真ん中の ni を強く</b>「ボ<b>ニー</b>トウ」。最初の bo は弱く短く。米音では t が軽い「ラ」に近くなることも。",
+    tip: "<b>真ん中の ni を強く</b>「ボ<b>ニー</b>トウ」。最初の bo は弱く短く。米音では t が軽い「ラ」に近くなることも。",
     fun: "実は、日本の「カツオ」は英語で正確には <b>skipjack tuna</b>（マグロの仲間）。でも鰹節は英語で <b>bonito flakes</b> と呼ばれます。" },
 ];
 
-// ---- 状態 -------------------------------------------------------------
+// ---- 設定（声の男女だけ。端末に保存して次回も使う） ----------------------
 const state = { gender: "female" };
 try {
   const saved = JSON.parse(localStorage.getItem("seaPron") || "{}");
-  if (["female", "male"].includes(saved.gender)) state.gender = saved.gender;
+  if (saved && ["female", "male"].includes(saved.gender)) state.gender = saved.gender;
 } catch (e) {}
 function save() {
   try { localStorage.setItem("seaPron", JSON.stringify(state)); } catch (e) {}
@@ -262,25 +228,25 @@ function save() {
 
 // ---- 音声（Web Speech API） -------------------------------------------
 const synth = window.speechSynthesis;
-let voices = [];
+const langOf = v => v.lang.replace("_", "-").toLowerCase();
+let voices = []; // アメリカ英語の声（自然な順）
 
-// 自然な発音になりやすい声を上位に並べるためのスコア
+// 自然に聞こえやすい声ほど高いスコア。効果音のような声は除外する
 function voiceScore(v) {
   const n = v.name.toLowerCase();
   let s = 0;
   if (/natural|neural|premium|enhanced/.test(n)) s += 50;
   if (/google/.test(n)) s += 30;
-  if (/samantha|ava|allison|aria|jenny|guy|daniel|serena|libby|sonia|ryan|aaron|nicky|evan|nathan|zoe|arthur|karen|lee|natasha|william|veena|rishi|neerja|prabhat/.test(n)) s += 20;
+  if (/samantha|ava|allison|aria|jenny|michelle|emma|zoe|nicky|guy|andrew|brian|aaron|evan|nathan/.test(n)) s += 20;
   if (!v.localService) s += 5;
   if (/eddy|flo\b|reed|rocko|sandy|shelley|grandma|grandpa/.test(n)) s -= 30; // 機械っぽいが発音は正確
-  if (/compact|novelty|whisper|bells|bad news|jester|zarvox|trinoids|bubbles|boing|cellos|organ|albert|superstar|wobble|good news|hysterical/.test(n)) s -= 100;
+  if (/compact|novelty|whisper|bells|bad news|good news|jester|zarvox|trinoids|bubbles|boing|cellos|organ|albert|superstar|wobble|hysterical|bahh|deranged|princess/.test(n)) s -= 100;
   return s;
 }
-const LANG = "en-US"; // 発音はアメリカ英語のみ
 
-// 声の名前から性別を判定（ブラウザは性別情報をくれないため、主要な声の名前で見分ける）
-const FEMALE = /female|flo\b|sandy|shelley|grandma|samantha|ava\b|natasha|catherine|annette|carly|elsie|freya|joanne|kim\b|tina\b|veena|neerja|heera|isha\b|allison|susan|victoria|zoe|nicky|kate|serena|stephanie|martha|moira|tessa|karen|fiona|aria|jenny|zira|libby|sonia|hazel|michelle|emma|ana\b|ashley|cora|elizabeth|jane|monica|nancy|sara|amber|maisie|mia\b|google us english/;
-const MALE = /\bmale\b|eddy|reed|rocko|grandpa|alex\b|daniel|fred\b|tom\b|aaron|arthur|evan|nathan|oliver|rishi|lee\b|william|darren|duncan|ken\b|neil|tim\b|prabhat|ravi\b|hemant|david|guy\b|mark\b|ryan|george|christopher|eric\b|roger|steffan|brian|andrew|thomas|alfie|elliot|ethan|jacob|tony|davis|jason/;
+// 声の名前から男女を判定（ブラウザは性別を教えてくれないため、主なアメリカ英語の声の名前で見分ける）
+const FEMALE = /female|samantha|ava|allison|susan|victoria|zoe|nicky|kathy|aria|jenny|zira|michelle|emma|ana\b|ashley|cora|elizabeth|jane|monica|nancy|sara|amber|flo\b|sandy|shelley|grandma|google us english/;
+const MALE = /\bmale\b|aaron|fred\b|junior|ralph|tom\b|evan|nathan|alex\b|david|mark\b|guy\b|andrew|brian|christopher|eric\b|roger|steffan|davis|jason|tony|jacob|eddy|reed|rocko|grandpa/;
 function genderOf(v) {
   const n = v.name.toLowerCase();
   if (FEMALE.test(n)) return "female";
@@ -288,52 +254,55 @@ function genderOf(v) {
   return null;
 }
 
-// 英語の声をすべて集め、自然な順に並べる（変な効果音系の声は除外）
 function loadVoices() {
-  const all = synth ? synth.getVoices() : [];
-  voices = all.filter(v => /^en/i.test(v.lang) && voiceScore(v) > -50)
-              .sort((a, b) => voiceScore(b) - voiceScore(a));
-  showVoiceInfo();
-}
-const langOf = v => v.lang.replace("_", "-").toLowerCase();
-
-// 今どの声で再生されるかを画面に表示する（代わりの声のときは正直に伝える）
-function showVoiceInfo() {
-  const el = document.getElementById("voiceInfo");
-  if (!synth) return;
-  const { voice, pitch } = pickVoice();
-  const g = state.gender === "female" ? "女性" : "男性";
-  if (!voice) { el.textContent = "🔈 端末の標準の英語音声で再生します"; el.className = "voice-info"; return; }
-  const notes = [];
-  if (langOf(voice) !== LANG.toLowerCase())
-    notes.push("この端末にはアメリカ英語の声がないため、別の英語の声で代わりに再生しています");
-  else if (pitch !== 1)
-    notes.push(`この端末ではアメリカ英語の${g}の声を選べないため、声の高さを変えて${g}らしくしています（発音は同じです）`);
-  el.textContent = `🔈 再生する声：${voice.name.replace(/\s*[-(].*$/, "")}（アメリカ英語）` + (notes.length ? `　⚠️ ${notes.join("。")}` : "");
-  if (langOf(voice) !== LANG.toLowerCase()) el.textContent = el.textContent.replace("（アメリカ英語）", `（${voice.lang}）`);
-  el.className = notes.length ? "voice-info sub" : "voice-info";
+  voices = (synth ? synth.getVoices() : [])
+    .filter(v => langOf(v) === "en-us" && voiceScore(v) > -50)
+    .sort((a, b) => voiceScore(b) - voiceScore(a));
+  showNote();
 }
 
 // 選んだ性別のアメリカ英語の声のうち、一番自然な声を返す。
-// 見つからない端末では、アメリカ英語の声の高さ（pitch）を変えて男女の違いを出す。
+// 男性の声がない端末では、声の高さ（pitch）を下げて男性らしくする。
 function pickVoice() {
-  const us = voices.filter(v => langOf(v) === LANG.toLowerCase());
-  const match = us.find(v => genderOf(v) === state.gender);
+  const match = voices.find(v => genderOf(v) === state.gender);
   if (match) return { voice: match, pitch: 1 };
-  return { voice: us[0] || voices[0], pitch: state.gender === "male" ? 0.8 : 1.15 };
+  return { voice: voices[0], pitch: state.gender === "male" ? 0.8 : 1 };
+}
+
+// LINE・Instagram などのアプリ内ブラウザは読み上げが不安定
+const IN_APP = /Line\/|FBAN|FBAV|Instagram|Twitter|MicroMessenger|KAKAOTALK/i.test(navigator.userAgent);
+
+// 注意が必要なときだけ、画面に ⚠️ で知らせる
+function showNote() {
+  const el = document.getElementById("note");
+  let msg = "";
+  if (!synth) msg = "このブラウザは音声読み上げに対応していません。Safari / Chrome の最新版でお試しください。";
+  else if (IN_APP) msg = "アプリ内のブラウザでは音声が正しく再生されないことがあります。メニューから「Safari で開く」/「Chrome で開く」を選んでください。";
+  else {
+    const { voice, pitch } = pickVoice();
+    if (!voice) msg = "この端末にはアメリカ英語の声が見つからないため、端末の標準の声で再生します。";
+    else if (pitch !== 1) msg = "この端末では男性の声を選べないため、声の高さを下げて再生します（発音は同じです）。";
+    else if (state.gender === "female" && genderOf(voice) === "male") msg = "この端末には女性の声がないため、男性の声で再生します。";
+  }
+  el.textContent = msg ? "⚠️ " + msg : "";
+  el.hidden = !msg;
 }
 
 let current = null; // 再生中の音声（参照を持っておかないと Chrome で終了通知が届かないことがある）
+
+function clearPlaying() {
+  document.querySelectorAll(".card.playing").forEach(c => c.classList.remove("playing"));
+}
 
 function speak(creature, cardEl) {
   if (!synth) return;
   if (!voices.length) loadVoices(); // 声の一覧がまだ届いていない端末向け
   const { voice, pitch } = pickVoice();
   const u = new SpeechSynthesisUtterance(creature.word);
-  u.lang = voice ? voice.lang.replace("_", "-") : LANG; // 声と言語の指定を一致させる（食い違うと端末が別の声に差し替えることがある）
+  u.lang = voice ? voice.lang.replace("_", "-") : "en-US";
   if (voice) u.voice = voice;
-  u.pitch = voice ? pitch : 1;
-  document.querySelectorAll(".card.playing").forEach(c => c.classList.remove("playing"));
+  u.pitch = pitch;
+  clearPlaying();
   if (cardEl) cardEl.classList.add("playing");
   const finish = () => {
     if (current !== u) return; // 止めた古い音声の通知で、新しいカードの表示を消さない
@@ -356,32 +325,31 @@ function speak(creature, cardEl) {
 // ---- 画面 -------------------------------------------------------------
 function renderGrid() {
   const grid = document.getElementById("grid");
-  grid.innerHTML = "";
   CREATURES.forEach(c => {
     const wrap = document.createElement("div");
-    const btn = document.createElement("button");
-    btn.className = "card";
-    btn.type = "button";
-    btn.setAttribute("aria-label", c.word + " を再生");
-    btn.innerHTML = `<img src="img/${c.id}.png" alt="${c.ja}">
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "card";
+    card.setAttribute("aria-label", c.word + " を再生");
+    card.innerHTML = `<img src="img/${c.id}.png" alt="${c.ja}">
       <div class="word">${c.word}</div><div class="ja">${c.ja}</div>`;
-    btn.addEventListener("click", () => speak(c, btn));
+    card.addEventListener("click", () => speak(c, card));
     const more = document.createElement("button");
     more.type = "button";
-    more.className = "more";
+    more.className = "btn";
     more.textContent = "詳しく見る";
     more.addEventListener("click", () => openDetail(c));
-    wrap.append(btn, more);
+    wrap.append(card, more);
     grid.appendChild(wrap);
   });
 }
 
 function sylHTML(c) {
-  return c.syl.map((s, i) =>
-    `<span class="s${c.stress.includes(i) ? " st" : ""}">${s}</span>`
-  ).join('<span class="dot">・</span>');
+  return c.syl.map((s, i) => `<span class="s${c.stress.includes(i) ? " st" : ""}">${s}</span>`)
+    .join('<span class="dot">・</span>');
 }
 
+const dlg = document.getElementById("dlg");
 function openDetail(c) {
   document.getElementById("detail").innerHTML = `
     <div class="detail-top">
@@ -389,68 +357,50 @@ function openDetail(c) {
       <div>
         <h2>${c.word}</h2>
         <div class="ja">${c.ja}</div>
-        <div class="ipa">🇺🇸 ${c.ipa}</div>
+        <div class="ipa">${c.ipa}</div>
       </div>
     </div>
     <div class="syl">${sylHTML(c)}</div>
-    <div class="legend"><span style="color:var(--stress);font-weight:700">赤い下線</span> = 強く読むところ（アクセント）</div>
-    <div class="tip">💡 <b>発音のコツ</b><br>${c.tip}</div>
-    <div class="fun">🐠 <b>おもしろ豆知識</b><br>${c.fun}</div>
-    <div class="play-row">
-      <button type="button" data-play>🔊 もう一度きく</button>
-    </div>
-    <button type="button" class="close">閉じる</button>`;
-  const dlg = document.getElementById("dlg");
+    <div class="legend"><span style="color:var(--stress);font-weight:700">赤い下線</span> = 強く読むところ</div>
+    <button type="button" class="btn primary" data-play>🔊 聞く</button>
+    <div class="box tip">💡 <b>発音のコツ</b><br>${c.tip}</div>
+    <div class="box fun">🐠 <b>おもしろ豆知識</b><br>${c.fun}</div>
+    <button type="button" class="btn" data-close>閉じる</button>`;
   dlg.querySelector("[data-play]").addEventListener("click", () => speak(c));
-  dlg.querySelector(".close").addEventListener("click", () => closeDialog());
-  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); // 古い端末向け
+  dlg.querySelector("[data-close]").addEventListener("click", () => dlg.close());
+  dlg.showModal();
   document.body.classList.add("modal-open");
   dlg.scrollTop = 0; // ボタンに自動で移るフォーカスで下にずれないよう、必ず一番上から表示
-  speak(c); // 開いたときにまず1回再生
 }
-function closeDialog() {
-  const dlg = document.getElementById("dlg");
-  if (dlg.close) dlg.close(); else dlg.removeAttribute("open");
-  document.body.classList.remove("modal-open");
-}
-document.getElementById("dlg").addEventListener("click", e => {
-  if (e.target.id === "dlg") closeDialog(); // 背景タップで閉じる
-});
-document.getElementById("dlg").addEventListener("close", () => document.body.classList.remove("modal-open"));
+dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); }); // 背景タップで閉じる
+dlg.addEventListener("close", () => document.body.classList.remove("modal-open"));
 
+// 声の切り替え（設定を変えるだけで、音は鳴らさない）
 function syncButtons() {
   document.querySelectorAll("[data-gender]").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.gender === state.gender)));
 }
 document.querySelectorAll("[data-gender]").forEach(b => b.addEventListener("click", () => {
-  state.gender = b.dataset.gender; save(); syncButtons(); showVoiceInfo();
-  speak(CREATURES[0]); // 選んだ声を試聴
+  state.gender = b.dataset.gender; save(); syncButtons(); showNote();
 }));
 
 renderGrid();
 syncButtons();
-if (!synth) {
-  const w = document.getElementById("warn");
-  w.textContent = "このブラウザは音声読み上げに対応していません。Chrome / Safari / Edge の最新版でお試しください。";
-  w.style.display = "block";
-} else {
+showNote();
+if (synth) {
   loadVoices();
-  // 音声リストは後から読み込まれるブラウザがあるため、届いたら作り直す
+  // 声の一覧は後から届くブラウザがあるため、届いたら作り直す
   synth.onvoiceschanged = loadVoices;
   // iPhone では通知が来ないことがあるので、最初の数秒は自分で取りに行く
   let tries = 0;
   const poll = setInterval(() => {
-    if (synth.getVoices().length !== voices.length) loadVoices();
+    if (synth.getVoices().length) loadVoices();
     if (++tries >= 10) clearInterval(poll);
   }, 300);
-  // 別のアプリに切り替えたら読み上げを止める（戻ったときに固まるのを防ぐ）
-  document.addEventListener("visibilitychange", () => { if (document.hidden) { current = null; synth.cancel(); } });
-}
-// LINE・Instagram などのアプリ内ブラウザは読み上げが不安定なので案内を出す
-if (/Line\/|FBAN|FBAV|Instagram|Twitter|MicroMessenger|KAKAOTALK/i.test(navigator.userAgent)) {
-  const w = document.getElementById("warn");
-  w.textContent = "アプリ内のブラウザでは音声が正しく再生されないことがあります。右上のメニューから「Safari で開く」/「Chrome で開く」を選んでください。";
-  w.style.display = "block";
+  // 別のアプリに切り替えたら読み上げを止め、「再生中」表示も消す
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { current = null; synth.cancel(); clearPlaying(); }
+  });
 }
 </script>
 </body>
