@@ -108,6 +108,10 @@
   .voice-info { max-width: 960px; margin: 0 auto; padding: 8px 16px 0; font-size: .85rem; color: var(--sub); }
   .voice-info.sub { color: #9a6700; }
   .notice { max-width: 960px; margin: 0 auto; padding: 0 16px 24px; font-size: .85rem; color: var(--sub); }
+  .notice h2 { font-size: 1rem; color: var(--ink); margin: 16px 0 6px; }
+  .notice table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+  .notice th, .notice td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .notice th { color: var(--ink); background: var(--accent-soft); }
   .warn { background: #fff4d6; color: #6b4e00; border-radius: 10px; padding: 10px 14px; margin: 0 16px 12px; display: none; }
 </style>
 </head>
@@ -152,10 +156,21 @@
   <div class="grid" id="grid"></div>
 </main>
 
-<p class="notice">
-  ※ 音声はお使いの端末に入っている英語音声（読み上げエンジン）で再生されます。
-  端末に入っている声の中から、なるべく自然に聞こえる女性・男性の声を自動で選びます。
-</p>
+<section class="notice">
+  <p>※ 音声はお使いの端末に入っている英語音声（読み上げエンジン）で再生されます。
+  端末に入っている声の中から、なるべく自然に聞こえる女性・男性の声を自動で選びます。</p>
+  <h2>🎧 いちばん正確な発音で聞くには</h2>
+  <table>
+    <tr><th>端末</th><th>使える声</th></tr>
+    <tr><td>パソコンの <b>Microsoft Edge</b>（おすすめ）</td><td>✅ 4アクセント×男女すべて高品質な声</td></tr>
+    <tr><td>iPhone / Mac（Safari）</td><td>✅ 米国・英国・豪州。インドの女性の声は端末にダウンロードが必要</td></tr>
+    <tr><td>パソコンの Chrome</td><td>△ 米国女性・英国男女のみ。それ以外はイギリス英語の声で代わりに再生</td></tr>
+    <tr><td>Android</td><td>△ 男女を選べないため、声の高さで切り替え（発音は同じ）</td></tr>
+  </table>
+  <p>iPhone では「設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語」から
+  <b>「拡張」「プレミアム」</b>の声をダウンロードすると、さらに自然な発音になります。
+  代わりの声で再生しているときは、画面上部に ⚠️ で表示されます。</p>
+</section>
 
 <dialog id="dlg">
   <div class="detail" id="detail"></div>
