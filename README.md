@@ -31,8 +31,8 @@ Generated with GitHub Copilot CLI × WorkIQ × Claude Opus 4.7
 
 ## おまけ：おさかなを英語で発音練習 🐟（アーヒスタ制作）
 
-[`sea-creatures/`](./sea-creatures/) — 12種類の海の生き物の英語発音を、米国・英国・豪州・インドの4つのアクセントと「ゆっくり／ふつう」で聞けるWebアプリ。
+[`sea-creatures/`](./sea-creatures/) — 12種類の海の生き物の英語発音を、アメリカ英語で、女性・男性の声と「ゆっくり／ふつう」で聞けるWebアプリ。
 公開後は https://okatech.github.io/agent-textbook/sea-creatures/ で開けます。
 
-**いちばん正確な発音で聞くには：** パソコンの Microsoft Edge がおすすめ（4アクセント×男女すべて高品質な声）。
+**いちばん正確な発音で聞くには：** パソコンの Microsoft Edge がおすすめ（男女とも高品質なアメリカ英語の声）。
 iPhone は「設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語」で「拡張」「プレミアム」の声をダウンロードするとさらに自然になります。
