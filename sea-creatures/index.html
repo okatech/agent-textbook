@@ -109,7 +109,6 @@
     flex: 1; min-height: 52px; border: 2px solid var(--accent); border-radius: 12px; padding: 14px 8px; font: inherit; font-weight: 700;
     font-size: 1rem; cursor: pointer; background: var(--accent); color: #fff;
   }
-  .play-row button.slow { background: var(--card); color: var(--accent); border: 2px solid var(--accent); }
   .more {
     width: 100%; min-height: 44px; margin-top: 6px; border: 2px solid var(--accent); border-radius: 999px;
     background: var(--card); color: var(--accent); font: inherit; font-weight: 700; cursor: pointer;
@@ -136,13 +135,6 @@
 </header>
 
 <div class="controls">
-  <div class="group">
-    <span>速さ</span>
-    <div class="seg" role="group" aria-label="再生速度">
-      <button type="button" data-rate="slow" aria-pressed="false">🐢 ゆっくり (½)</button>
-      <button type="button" data-rate="normal" aria-pressed="true">🐟 ふつう</button>
-    </div>
-  </div>
   <div class="group">
     <span>声</span>
     <div class="seg" role="group" aria-label="声">
@@ -237,12 +229,9 @@ const CREATURES = [
 ];
 
 // ---- 状態 -------------------------------------------------------------
-// ゆっくり＝ふつうの約半分の速さ（差が小さいと1単語では聞き分けにくいため大きめに差をつける）
-const RATES = { slow: 0.45, normal: 1.0 };
-const state = { rate: "normal", gender: "female" };
+const state = { gender: "female" };
 try {
   const saved = JSON.parse(localStorage.getItem("seaPron") || "{}");
-  if (saved.rate in RATES) state.rate = saved.rate;
   if (["female", "male"].includes(saved.gender)) state.gender = saved.gender;
 } catch (e) {}
 function save() {
@@ -300,13 +289,7 @@ function showVoiceInfo() {
     notes.push(`この端末ではアメリカ英語の${g}の声を選べないため、声の高さを変えて${g}らしくしています（発音は同じです）`);
   el.textContent = `🔈 再生する声：${voice.name.replace(/\s*[-(].*$/, "")}（アメリカ英語）` + (notes.length ? `　⚠️ ${notes.join("。")}` : "");
   if (langOf(voice) !== LANG.toLowerCase()) el.textContent = el.textContent.replace("（アメリカ英語）", `（${voice.lang}）`);
-  if (rateIgnored) {
-    el.textContent += "　⚠️ この端末は読み上げの速さの指定に従っていないようです。"
-      + (/Android/i.test(navigator.userAgent)
-          ? "Android の「設定 → ユーザー補助 → テキスト読み上げの出力」で速さを変えられます。"
-          : "端末の読み上げ設定をご確認ください。");
-  }
-  el.className = notes.length || rateIgnored ? "voice-info sub" : "voice-info";
+  el.className = notes.length ? "voice-info sub" : "voice-info";
 }
 
 // 選んだ性別のアメリカ英語の声のうち、一番自然な声を返す。
@@ -320,44 +303,25 @@ function pickVoice() {
 
 let current = null; // 再生中の音声（参照を持っておかないと Chrome で終了通知が届かないことがある）
 
-// 端末が「速さ」の指定に本当に従っているかを、実際の読み上げ時間で確かめる
-// （1文字あたりの読み上げ時間を、ゆっくり・ふつうそれぞれで記録して比べる）
-const timing = { slow: [], normal: [] };
-let rateIgnored = false;
-function recordTiming(rateKey, word, ms) {
-  if (ms < 150 || ms > 8000) return; // 途中で止めた・測れなかったものは除く
-  timing[rateKey].push(ms / word.length);
-  if (!timing.slow.length || !timing.normal.length) return;
-  const avg = a => a.reduce((x, y) => x + y, 0) / a.length;
-  rateIgnored = avg(timing.slow) < avg(timing.normal) * 1.25;
-  showVoiceInfo();
-}
-
-function speak(creature, rateKey, cardEl) {
+function speak(creature, cardEl) {
   if (!synth) return;
   if (!voices.length) loadVoices(); // 声の一覧がまだ届いていない端末向け
   const { voice, pitch } = pickVoice();
-  const key = rateKey || state.rate;
   const u = new SpeechSynthesisUtterance(creature.word);
   u.lang = voice ? voice.lang.replace("_", "-") : LANG; // 声と言語の指定を一致させる（食い違うと端末が別の声に差し替えることがある）
   if (voice) u.voice = voice;
-  u.rate = RATES[key];
   u.pitch = voice ? pitch : 1;
   document.querySelectorAll(".card.playing").forEach(c => c.classList.remove("playing"));
   if (cardEl) cardEl.classList.add("playing");
-  let started = 0;
-  u.onstart = () => { started = performance.now(); };
-  const finish = ok => {
+  const finish = () => {
     if (current !== u) return; // 止めた古い音声の通知で、新しいカードの表示を消さない
     current = null;
     clearTimeout(safety);
     if (cardEl) cardEl.classList.remove("playing");
-    if (ok && started) recordTiming(key, creature.word, performance.now() - started);
   };
-  u.onend = () => finish(true);
-  u.onerror = () => finish(false);
+  u.onend = u.onerror = finish;
   // Android では終了の通知が来ないことがあるため、一定時間で「再生中」表示を必ず消す
-  const safety = setTimeout(() => finish(false), 6000);
+  const safety = setTimeout(finish, 6000);
   const busy = synth.speaking || synth.pending;
   current = u;
   synth.cancel(); // 前の音声を止めてから再生
@@ -379,7 +343,7 @@ function renderGrid() {
     btn.setAttribute("aria-label", c.word + " を再生");
     btn.innerHTML = `<img src="img/${c.id}.png" alt="${c.ja}">
       <div class="word">${c.word}</div><div class="ja">${c.ja}</div>`;
-    btn.addEventListener("click", () => speak(c, null, btn));
+    btn.addEventListener("click", () => speak(c, btn));
     const more = document.createElement("button");
     more.type = "button";
     more.className = "more";
@@ -410,17 +374,15 @@ function openDetail(c) {
     <div class="legend"><span style="color:var(--stress);font-weight:700">赤い下線</span> = 強く読むところ（アクセント）</div>
     <div class="tip">💡 ${c.tip}</div>
     <div class="play-row">
-      <button type="button" class="slow" data-r="slow">🐢 ゆっくり</button>
-      <button type="button" data-r="normal">🐟 ふつう</button>
+      <button type="button" data-play>🔊 もう一度きく</button>
     </div>
     <button type="button" class="close">閉じる</button>`;
   const dlg = document.getElementById("dlg");
-  dlg.querySelectorAll("[data-r]").forEach(b =>
-    b.addEventListener("click", () => speak(c, b.dataset.r)));
+  dlg.querySelector("[data-play]").addEventListener("click", () => speak(c));
   dlg.querySelector(".close").addEventListener("click", () => closeDialog());
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); // 古い端末向け
   document.body.classList.add("modal-open");
-  speak(c, "slow"); // 開いたときはまずゆっくり
+  speak(c); // 開いたときにまず1回再生
 }
 function closeDialog() {
   const dlg = document.getElementById("dlg");
@@ -433,15 +395,9 @@ document.getElementById("dlg").addEventListener("click", e => {
 document.getElementById("dlg").addEventListener("close", () => document.body.classList.remove("modal-open"));
 
 function syncButtons() {
-  document.querySelectorAll("[data-rate]").forEach(b =>
-    b.setAttribute("aria-pressed", String(b.dataset.rate === state.rate)));
   document.querySelectorAll("[data-gender]").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.gender === state.gender)));
 }
-document.querySelectorAll("[data-rate]").forEach(b => b.addEventListener("click", () => {
-  state.rate = b.dataset.rate; save(); syncButtons();
-  speak(CREATURES[0]); // 選んだ速さを試聴
-}));
 document.querySelectorAll("[data-gender]").forEach(b => b.addEventListener("click", () => {
   state.gender = b.dataset.gender; save(); syncButtons(); showVoiceInfo();
   speak(CREATURES[0]); // 選んだ声を試聴
