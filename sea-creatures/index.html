@@ -122,7 +122,7 @@
   <div class="group">
     <span>速さ</span>
     <div class="seg" role="group" aria-label="再生速度">
-      <button type="button" data-rate="slow" aria-pressed="false">🐢 ゆっくり</button>
+      <button type="button" data-rate="slow" aria-pressed="false">🐢 ゆっくり (½)</button>
       <button type="button" data-rate="normal" aria-pressed="true">🐟 ふつう</button>
     </div>
   </div>
@@ -218,11 +218,14 @@ const CREATURES = [
 ];
 
 // ---- 状態 -------------------------------------------------------------
-const RATES = { slow: 0.55, normal: 0.95 };
+// ゆっくり＝ふつうの約半分の速さ（差が小さいと1単語では聞き分けにくいため大きめに差をつける）
+const RATES = { slow: 0.45, normal: 1.0 };
 const state = { rate: "normal", accent: "US", gender: "female" };
 try {
   const saved = JSON.parse(localStorage.getItem("seaPron") || "{}");
-  Object.assign(state, saved);
+  if (saved.rate in RATES) state.rate = saved.rate;
+  if (["US", "UK", "AU", "IN"].includes(saved.accent)) state.accent = saved.accent;
+  if (["female", "male"].includes(saved.gender)) state.gender = saved.gender;
 } catch (e) {}
 function save() {
   try { localStorage.setItem("seaPron", JSON.stringify(state)); } catch (e) {}
@@ -274,7 +277,6 @@ const langOf = v => v.lang.replace("_", "-").toLowerCase();
 // 英国の女性の声がない端末向けに、発音が近い地域の声を次の候補にする
 const NEAR = { US: ["en-ca"], UK: ["en-ie", "en-au", "en-nz", "en-za"], AU: ["en-nz", "en-gb"], IN: ["en-gb"] };
 
-// 選んだアクセント・性別に一番合う声を返す。
 // 今どの声で再生されるかを画面に表示する（代わりの声のときは正直に伝える）
 function showVoiceInfo() {
   const el = document.getElementById("voiceInfo");
@@ -294,6 +296,7 @@ function showVoiceInfo() {
   el.className = notes.length ? "voice-info sub" : "voice-info";
 }
 
+// 選んだアクセント・性別に一番合う声を返す。
 // ①同じアクセント＆性別 → ②近いアクセント＆性別 → ③英語の同じ性別 → ④声の高さで調整
 function pickVoice() {
   const lang = accentLang().toLowerCase();
@@ -306,21 +309,31 @@ function pickVoice() {
   return { voice: base, pitch: state.gender === "male" ? 0.8 : 1.15 };
 }
 
+let current = null; // 再生中の音声（参照を持っておかないと Chrome で終了通知が届かないことがある）
+
 function speak(creature, rateKey, cardEl) {
   if (!synth) return;
-  synth.cancel(); // 前の音声を止めてから再生
+  if (!voices.length) loadVoices(); // 声の一覧がまだ届いていない端末向け
   const { voice, pitch } = pickVoice();
   const u = new SpeechSynthesisUtterance(creature.word);
   u.lang = voice ? voice.lang.replace("_", "-") : accentLang(); // 声と言語の指定を一致させる（食い違うと端末が別の声に差し替えることがある）
   if (voice) u.voice = voice;
   u.rate = RATES[rateKey || state.rate];
-  u.pitch = pitch;
-  if (cardEl) {
-    document.querySelectorAll(".card.playing").forEach(c => c.classList.remove("playing"));
-    cardEl.classList.add("playing");
-    u.onend = u.onerror = () => cardEl.classList.remove("playing");
-  }
-  synth.speak(u);
+  u.pitch = voice ? pitch : 1;
+  document.querySelectorAll(".card.playing").forEach(c => c.classList.remove("playing"));
+  if (cardEl) cardEl.classList.add("playing");
+  u.onend = u.onerror = () => {
+    if (current !== u) return; // 止めた古い音声の通知で、新しいカードの表示を消さない
+    current = null;
+    if (cardEl) cardEl.classList.remove("playing");
+  };
+  const busy = synth.speaking || synth.pending;
+  current = u;
+  synth.cancel(); // 前の音声を止めてから再生
+  synth.resume(); // Chrome で読み上げが一時停止のまま固まるのを防ぐ
+  // 止めた直後に再生すると無視される端末があるため、再生中だったときだけ少し待つ
+  if (busy) setTimeout(() => { if (current === u) synth.speak(u); }, 80);
+  else synth.speak(u);
 }
 
 // ---- 画面 -------------------------------------------------------------
@@ -392,9 +405,11 @@ function syncButtons() {
 }
 document.querySelectorAll("[data-rate]").forEach(b => b.addEventListener("click", () => {
   state.rate = b.dataset.rate; save(); syncButtons();
+  speak(CREATURES[0]); // 選んだ速さを試聴
 }));
 document.querySelectorAll("[data-accent]").forEach(b => b.addEventListener("click", () => {
   state.accent = b.dataset.accent; save(); syncButtons(); showVoiceInfo();
+  speak(CREATURES[0]); // 選んだアクセントを試聴
 }));
 document.querySelectorAll("[data-gender]").forEach(b => b.addEventListener("click", () => {
   state.gender = b.dataset.gender; save(); syncButtons(); showVoiceInfo();
