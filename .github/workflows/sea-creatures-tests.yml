@@ -1,0 +1,30 @@
+name: Sea creatures browser tests
+
+on:
+  pull_request:
+    paths:
+      - "sea-creatures/**"
+      - ".github/workflows/sea-creatures-tests.yml"
+      - ".github/workflows/pages.yml"
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: sea-creatures/_tests/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: sea-creatures/_tests
+      - run: npx playwright install --with-deps chromium webkit
+        working-directory: sea-creatures/_tests
+      - run: npm test
+        working-directory: sea-creatures/_tests

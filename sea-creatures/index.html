@@ -9,6 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="おさかな発音">
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <style>
   :root {
@@ -16,7 +17,7 @@
     --card: #ffffff;
     --ink: #1d2b3a;
     --sub: #5b6b7c;
-    --accent: #1f7fc4;
+    --accent: #176ca8;
     --on-accent: #ffffff;   /* 青いボタンの上の文字色 */
     --accent-soft: #d8ecf9;
     --stress: #e0484f;
@@ -53,6 +54,7 @@
     border: 2px solid var(--accent); background: var(--card); color: var(--accent);
   }
   .btn:active { background: var(--accent-soft); }
+  button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
   .btn.primary { background: var(--accent); color: var(--on-accent); min-height: 52px; font-size: 1.05rem; }
 
   .controls {
@@ -69,9 +71,12 @@
     background: var(--note-bg); color: var(--note-ink); font-size: .9rem;
   }
   .note[hidden] { display: none; }
+  .playback-status { min-height: 1.6em; max-width: 928px; margin: 8px auto 0; padding: 0 16px; color: var(--sub); }
+  .detail .note, .detail .playback-status { margin: 0; width: 100%; }
 
   main { max-width: 960px; margin: 0 auto; padding: 16px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr)); gap: 14px; }
+  @media (max-width: 359px) { .grid { gap: 8px; } }
   .grid > div { display: flex; flex-direction: column; gap: 6px; }
   .card {
     flex: 1; background: var(--card); border: 2px solid var(--border); border-radius: 16px;
@@ -80,7 +85,7 @@
   .card:active { transform: scale(.97); }
   .card.playing { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
   .card img { width: 100%; max-width: 140px; aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 10px; }
-  .card .word { font-size: 1.15rem; font-weight: 700; margin-top: 4px; line-height: 1.3; }
+  .card .word { font-size: 1.15rem; font-weight: 700; margin-top: 4px; line-height: 1.3; overflow-wrap: anywhere; }
   .card .ja { font-size: .8rem; color: var(--sub); }
 
   /* 詳細画面 */
@@ -96,7 +101,7 @@
   .detail img { width: 110px; height: 110px; object-fit: contain; background: #fff; border-radius: 12px; flex-shrink: 0; }
   .detail h2 { margin: 0; font-size: clamp(1.2rem, 6vw, 1.7rem); line-height: 1.2; overflow-wrap: break-word; }
   .detail .ja { color: var(--sub); }
-  .ipa { font-family: "Charis SIL", "Doulos SIL", "Lucida Sans Unicode", "Segoe UI", serif; font-size: 1.15rem; margin-top: 4px; }
+  .ipa { font-family: "Charis SIL", "Doulos SIL", "Lucida Sans Unicode", "Segoe UI", serif; font-size: 1.15rem; margin-top: 4px; overflow-wrap: anywhere; }
   .syl { font-size: 1.6rem; font-weight: 700; }
   .syl .s.st { color: var(--stress); text-decoration: underline; text-underline-offset: 6px; }
   .syl .dot { color: var(--sub); font-weight: 400; padding: 0 4px; }
@@ -109,6 +114,14 @@
   @media (max-width: 520px) {
     .detail { padding: 16px; }
     .detail img { width: 90px; height: 90px; }
+  }
+  @media (max-width: 359px) {
+    .detail-top { gap: 12px; }
+    .detail img { width: 64px; height: 64px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
+    .card:active { transform: none; }
   }
 
   .notice { max-width: 960px; margin: 0 auto; padding: 0 16px 24px; font-size: .85rem; color: var(--sub); }
@@ -129,21 +142,19 @@
   </div>
 </div>
 
-<p class="note" id="note" hidden></p>
+<p class="note audio-note" id="note" role="status" hidden></p>
+<p class="playback-status" role="status" aria-live="polite"></p>
 
 <main>
   <div class="grid" id="grid"></div>
 </main>
 
 <section class="notice">
-  <p>※ 発音はアメリカ英語です。音声はお使いのスマホに入っている読み上げ機能で再生されます。</p>
-  <h2>🎧 より自然な声で聞くには</h2>
-  <p><b>iPhone：</b>「設定 → アクセシビリティ → 読み上げコンテンツ → 声 → 英語」から、
-  <b>「拡張」「プレミアム」</b>の声をダウンロードすると、さらに自然な発音になります。</p>
-  <p><b>Android：</b>男性・女性の声を選べない機種では、声の高さを変えて切り替えます（発音は同じです）。</p>
+  <p>※ 発音はアメリカ英語です。音声は Microsoft Azure の合成音声です。どの端末でも同じ音声ファイルを再生します。</p>
+  <p>女性は Ava、男性は Andrew の声です。音声の読み込みにはインターネット接続が必要です。音が聞こえない場合は、端末の音量や接続中のイヤホンをご確認ください。</p>
 </section>
 
-<dialog id="dlg">
+<dialog id="dlg" aria-labelledby="detail-title">
   <div class="detail" id="detail"></div>
 </dialog>
 
@@ -218,108 +229,89 @@ const CREATURES = [
 
 // ---- 設定（声の男女だけ。端末に保存して次回も使う） ----------------------
 const state = { gender: "female" };
+let storageWarning = "";
 try {
   const saved = JSON.parse(localStorage.getItem("seaPron") || "{}");
   if (saved && ["female", "male"].includes(saved.gender)) state.gender = saved.gender;
-} catch (e) {}
+} catch (e) {
+  console.warn("声の保存設定を読み込めませんでした。", e.name);
+  storageWarning = "保存した声の設定を読み込めないため、女性の声で開始します。";
+}
 function save() {
-  try { localStorage.setItem("seaPron", JSON.stringify(state)); } catch (e) {}
-}
-
-// ---- 音声（Web Speech API） -------------------------------------------
-const synth = window.speechSynthesis;
-const langOf = v => v.lang.replace("_", "-").toLowerCase();
-let voices = []; // アメリカ英語の声（自然な順）
-
-// 自然に聞こえやすい声ほど高いスコア。効果音のような声は除外する
-function voiceScore(v) {
-  const n = v.name.toLowerCase();
-  let s = 0;
-  if (/natural|neural|premium|enhanced/.test(n)) s += 50;
-  if (/google/.test(n)) s += 30;
-  if (/samantha|ava|allison|aria|jenny|michelle|emma|zoe|nicky|guy|andrew|brian|aaron|evan|nathan/.test(n)) s += 20;
-  if (!v.localService) s += 5;
-  if (/eddy|flo\b|reed|rocko|sandy|shelley|grandma|grandpa/.test(n)) s -= 30; // 機械っぽいが発音は正確
-  if (/compact|novelty|whisper|bells|bad news|good news|jester|zarvox|trinoids|bubbles|boing|cellos|organ|albert|superstar|wobble|hysterical|bahh|deranged|princess/.test(n)) s -= 100;
-  return s;
-}
-
-// 声の名前から男女を判定（ブラウザは性別を教えてくれないため、主なアメリカ英語の声の名前で見分ける）
-const FEMALE = /female|samantha|ava|allison|susan|victoria|zoe|nicky|kathy|aria|jenny|zira|michelle|emma|ana\b|ashley|cora|elizabeth|jane|monica|nancy|sara|amber|flo\b|sandy|shelley|grandma|google us english/;
-const MALE = /\bmale\b|aaron|fred\b|junior|ralph|tom\b|evan|nathan|alex\b|david|mark\b|guy\b|andrew|brian|christopher|eric\b|roger|steffan|davis|jason|tony|jacob|eddy|reed|rocko|grandpa/;
-function genderOf(v) {
-  const n = v.name.toLowerCase();
-  if (FEMALE.test(n)) return "female";
-  if (MALE.test(n)) return "male";
-  return null;
-}
-
-function loadVoices() {
-  voices = (synth ? synth.getVoices() : [])
-    .filter(v => langOf(v) === "en-us" && voiceScore(v) > -50)
-    .sort((a, b) => voiceScore(b) - voiceScore(a));
-  showNote();
-}
-
-// 選んだ性別のアメリカ英語の声のうち、一番自然な声を返す。
-// 男性の声がない端末では、声の高さ（pitch）を下げて男性らしくする。
-function pickVoice() {
-  const match = voices.find(v => genderOf(v) === state.gender);
-  if (match) return { voice: match, pitch: 1 };
-  return { voice: voices[0], pitch: state.gender === "male" ? 0.8 : 1 };
-}
-
-// LINE・Instagram などのアプリ内ブラウザは読み上げが不安定
-const IN_APP = /Line\/|FBAN|FBAV|Instagram|Twitter|MicroMessenger|KAKAOTALK/i.test(navigator.userAgent);
-
-// 注意が必要なときだけ、画面に ⚠️ で知らせる
-function showNote() {
-  const el = document.getElementById("note");
-  let msg = "";
-  if (!synth) msg = "このブラウザは音声読み上げに対応していません。Safari / Chrome の最新版でお試しください。";
-  else if (IN_APP) msg = "アプリ内のブラウザでは音声が正しく再生されないことがあります。メニューから「Safari で開く」/「Chrome で開く」を選んでください。";
-  else {
-    const { voice, pitch } = pickVoice();
-    if (!voice) msg = "この端末にはアメリカ英語の声が見つからないため、端末の標準の声で再生します。";
-    else if (pitch !== 1) msg = "この端末では男性の声を選べないため、声の高さを下げて再生します（発音は同じです）。";
-    else if (state.gender === "female" && genderOf(voice) === "male") msg = "この端末には女性の声がないため、男性の声で再生します。";
+  try {
+    localStorage.setItem("seaPron", JSON.stringify(state));
+    storageWarning = "";
+  } catch (e) {
+    console.warn("声の設定を保存できませんでした。", e.name);
+    storageWarning = "声の設定を保存できません。このページを開いている間だけ選択が有効です。";
   }
-  el.textContent = msg ? "⚠️ " + msg : "";
-  el.hidden = !msg;
 }
 
-let current = null; // 再生中の音声（参照を持っておかないと Chrome で終了通知が届かないことがある）
+// ---- 音声（事前に生成した米語の MP3。API キーは不要） -------------------
+const IN_APP = /Line\/|FBAN|FBAV|Instagram|Twitter|MicroMessenger|KAKAOTALK/i.test(navigator.userAgent);
+let playbackError = "";
+let current = null;
 
-function clearPlaying() {
-  document.querySelectorAll(".card.playing").forEach(c => c.classList.remove("playing"));
+function showNote() {
+  const messages = [playbackError, storageWarning];
+  if (IN_APP) messages.push("アプリ内のブラウザでは音声が正しく再生されないことがあります。メニューから「Safari で開く」/「Chrome で開く」を選んでください。");
+  const msg = messages.filter(Boolean).join(" ");
+  document.querySelectorAll(".audio-note").forEach(el => {
+    el.textContent = msg ? "⚠️ " + msg : "";
+    el.hidden = !msg;
+  });
 }
 
-function speak(creature, cardEl) {
-  if (!synth) return;
-  if (!voices.length) loadVoices(); // 声の一覧がまだ届いていない端末向け
-  const { voice, pitch } = pickVoice();
-  const u = new SpeechSynthesisUtterance(creature.word);
-  u.lang = voice ? voice.lang.replace("_", "-") : "en-US";
-  if (voice) u.voice = voice;
-  u.pitch = pitch;
-  clearPlaying();
-  if (cardEl) cardEl.classList.add("playing");
-  const finish = () => {
-    if (current !== u) return; // 止めた古い音声の通知で、新しいカードの表示を消さない
-    current = null;
-    clearTimeout(safety);
-    if (cardEl) cardEl.classList.remove("playing");
+function setPlaybackStatus(text) {
+  document.querySelectorAll(".playback-status").forEach(el => { el.textContent = text; });
+}
+
+function stopPlayback() {
+  const previous = current;
+  current = null;
+  if (previous) {
+    clearTimeout(previous.timer);
+    previous.player.onplaying = previous.player.onended = previous.player.onerror = null;
+    previous.player.pause();
+    previous.player.removeAttribute("src");
+    previous.player.load();
+    previous.button.classList.remove("playing");
+    previous.button.removeAttribute("aria-busy");
+  }
+  setPlaybackStatus("");
+}
+
+function speak(creature, button) {
+  stopPlayback();
+  playbackError = "";
+  showNote();
+  // 再生ごとに要素を分け、古い終了通知や Promise が次の再生を消さないようにする。
+  const player = new Audio(`audio/${creature.id}-${state.gender}.mp3`);
+  const session = { player, button, timer: null };
+  current = session;
+  button.setAttribute("aria-busy", "true");
+  setPlaybackStatus(`${creature.word}：音声を読み込み中…`);
+  const finish = (message = "") => {
+    if (current !== session) return;
+    stopPlayback();
+    playbackError = message;
+    showNote();
   };
-  u.onend = u.onerror = finish;
-  // Android では終了の通知が来ないことがあるため、一定時間で「再生中」表示を必ず消す
-  const safety = setTimeout(finish, 6000);
-  const busy = synth.speaking || synth.pending;
-  current = u;
-  synth.cancel(); // 前の音声を止めてから再生
-  synth.resume(); // Chrome で読み上げが一時停止のまま固まるのを防ぐ
-  // 止めた直後に再生すると無視される端末があるため、再生中だったときだけ少し待つ
-  if (busy) setTimeout(() => { if (current === u) synth.speak(u); }, 80);
-  else synth.speak(u);
+  player.onplaying = () => {
+    if (current !== session) return;
+    button.classList.add("playing");
+    setPlaybackStatus(`${creature.word}：再生中`);
+  };
+  player.onended = () => finish();
+  // pause は error より先に届く端末があるため、終了の判定には使わない。
+  player.onerror = () => finish("音声を読み込めませんでした。通信状態を確認し、もう一度「カード」または「聞く」を押してください。");
+  session.timer = setTimeout(() => finish("音声の再生が完了しませんでした。通信状態を確認し、もう一度お試しください。"), 12000);
+  // タップの処理内で直接 play() を呼ぶ（iPhone の自動再生制限に対応）。
+  player.play().catch(error => {
+    finish(error.name === "NotAllowedError"
+      ? "音声の再生が許可されませんでした。もう一度押すか、Safari / Chrome で開いてください。"
+      : "音声を再生できませんでした。通信状態を確認し、もう一度お試しください。");
+  });
 }
 
 // ---- 画面 -------------------------------------------------------------
@@ -332,13 +324,15 @@ function renderGrid() {
     card.className = "card";
     card.setAttribute("aria-label", c.word + " を再生");
     card.innerHTML = `<img src="img/${c.id}.png" alt="${c.ja}">
-      <div class="word">${c.word}</div><div class="ja">${c.ja}</div>`;
+      <div class="word" lang="en-US">${c.word}</div><div class="ja">${c.ja}</div>`;
     card.addEventListener("click", () => speak(c, card));
     const more = document.createElement("button");
     more.type = "button";
     more.className = "btn";
     more.textContent = "詳しく見る";
-    more.addEventListener("click", () => openDetail(c));
+    more.setAttribute("aria-label", c.ja + "を詳しく見る");
+    more.setAttribute("aria-haspopup", "dialog");
+    more.addEventListener("click", () => openDetail(c, more));
     wrap.append(card, more);
     grid.appendChild(wrap);
   });
@@ -350,12 +344,15 @@ function sylHTML(c) {
 }
 
 const dlg = document.getElementById("dlg");
-function openDetail(c) {
+let detailTrigger = null;
+function openDetail(c, trigger) {
+  stopPlayback();
+  detailTrigger = trigger;
   document.getElementById("detail").innerHTML = `
     <div class="detail-top">
       <img src="img/${c.id}.png" alt="${c.ja}">
       <div>
-        <h2>${c.word}</h2>
+        <h2 id="detail-title" lang="en-US">${c.word}</h2>
         <div class="ja">${c.ja}</div>
         <div class="ipa">${c.ipa}</div>
       </div>
@@ -363,17 +360,29 @@ function openDetail(c) {
     <div class="syl">${sylHTML(c)}</div>
     <div class="legend"><span style="color:var(--stress);font-weight:700">赤い下線</span> = 強く読むところ</div>
     <button type="button" class="btn primary" data-play>🔊 聞く</button>
+    <p class="playback-status" role="status" aria-live="polite"></p>
+    <p class="note audio-note" role="status" hidden></p>
     <div class="box tip">💡 <b>発音のコツ</b><br>${c.tip}</div>
     <div class="box fun">🐠 <b>おもしろ豆知識</b><br>${c.fun}</div>
     <button type="button" class="btn" data-close>閉じる</button>`;
-  dlg.querySelector("[data-play]").addEventListener("click", () => speak(c));
+  const playButton = dlg.querySelector("[data-play]");
+  playButton.addEventListener("click", () => speak(c, playButton));
   dlg.querySelector("[data-close]").addEventListener("click", () => dlg.close());
   dlg.showModal();
+  showNote();
   document.body.classList.add("modal-open");
   dlg.scrollTop = 0; // ボタンに自動で移るフォーカスで下にずれないよう、必ず一番上から表示
 }
-dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); }); // 背景タップで閉じる
-dlg.addEventListener("close", () => document.body.classList.remove("modal-open"));
+dlg.addEventListener("click", e => {
+  const rect = dlg.getBoundingClientRect();
+  if (e.target === dlg && (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom)) dlg.close();
+});
+dlg.addEventListener("close", () => {
+  stopPlayback();
+  document.body.classList.remove("modal-open");
+  detailTrigger?.focus({ preventScroll: true });
+  detailTrigger = null;
+});
 
 // 声の切り替え（設定を変えるだけで、音は鳴らさない）
 function syncButtons() {
@@ -381,27 +390,17 @@ function syncButtons() {
     b.setAttribute("aria-pressed", String(b.dataset.gender === state.gender)));
 }
 document.querySelectorAll("[data-gender]").forEach(b => b.addEventListener("click", () => {
+  stopPlayback();
   state.gender = b.dataset.gender; save(); syncButtons(); showNote();
 }));
 
 renderGrid();
 syncButtons();
 showNote();
-if (synth) {
-  loadVoices();
-  // 声の一覧は後から届くブラウザがあるため、届いたら作り直す
-  synth.onvoiceschanged = loadVoices;
-  // iPhone では通知が来ないことがあるので、最初の数秒は自分で取りに行く
-  let tries = 0;
-  const poll = setInterval(() => {
-    if (synth.getVoices().length) loadVoices();
-    if (++tries >= 10) clearInterval(poll);
-  }, 300);
-  // 別のアプリに切り替えたら読み上げを止め、「再生中」表示も消す
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) { current = null; synth.cancel(); clearPlaying(); }
-  });
-}
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) stopPlayback();
+});
+window.addEventListener("pagehide", stopPlayback);
 </script>
 </body>
 </html>
