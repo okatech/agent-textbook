@@ -15,7 +15,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  sea-creatures-tests:
+    uses: ./.github/workflows/sea-creatures-tests.yml
+
   build:
+    needs: sea-creatures-tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

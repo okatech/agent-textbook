@@ -1,0 +1,376 @@
+{
+  "provider": "Microsoft Azure AI Speech",
+  "format": "audio-24khz-48kbitrate-mono-mp3",
+  "recordings": [
+    {
+      "file": "shark-female.mp3",
+      "word": "shark",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Shark.",
+      "sha256": "4e5cb1c868d1ecd140041e536f6a296d1f13413956a5adeeb5208a50861f3955",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "shark-male.mp3",
+      "word": "shark",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 0.816,
+      "recognizedText": "Shark.",
+      "sha256": "74aef8d09ee46d0106ac14d8567890d458ea518b47542bd4a70b8ceb83863776",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "dolphin-female.mp3",
+      "word": "dolphin",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Dolphin.",
+      "sha256": "eee8ccb57b13b74170a6b3df24fdeb2e7999a50ee25d8d207615dcb6bbbb1924",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "dolphin-male.mp3",
+      "word": "dolphin",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 0.864,
+      "recognizedText": "Dolphin.",
+      "sha256": "cd0d4d11e654b570fe5d8dd941cc5f5e7f423333dbab7820e373bbd59df4ad4d",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "penguin-female.mp3",
+      "word": "penguin",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Penguin.",
+      "sha256": "40d4c2f94f1bfc273fd651ad3205547c248acac24231d5a0b4a62a34c0ea64d4",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "penguin-male.mp3",
+      "word": "penguin",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 0.792,
+      "recognizedText": "Penguin.",
+      "sha256": "0d90e3693107e07a83912669d11fb3a00f22620db676dfd5984766ff3975654e",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "sea-turtle-female.mp3",
+      "word": "sea turtle",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Sea turtle.",
+      "sha256": "9bf1b0d4ec4ed5c18e1fe2057263d7f4adc7c650b8fb46f7ab6d80573c7466ba",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "sea-turtle-male.mp3",
+      "word": "sea turtle",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Sea turtle.",
+      "sha256": "c553550c0550c65d33ee8d857572f3ff0bcde5b04dbabd7015c27e49086e8fba",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "ray-female.mp3",
+      "word": "ray",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Ray.",
+      "sha256": "289514017472a73de8d4cbfd271282bf80211d13cb0690b0d8888306272fc7f1",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "ray-male.mp3",
+      "word": "ray",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 0.768,
+      "recognizedText": "Ray.",
+      "sha256": "dfbb6e2795f18b122a3800699a607af0f6e89a580c492c4a1e54dcb5497bf491",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "jellyfish-female.mp3",
+      "word": "jellyfish",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Jellyfish.",
+      "sha256": "17ee9ab2bebaa9a666c1a68680cca4655c11d3732264c02628a674f3bdbe518c",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "jellyfish-male.mp3",
+      "word": "jellyfish",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Jellyfish.",
+      "sha256": "d5c6d886f957d24fa52bd48d712265facc1674740514b6697c49f67e93517b75",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "hammerhead-shark-female.mp3",
+      "word": "hammerhead shark",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Hammerhead shark.",
+      "sha256": "848baee25c444abb77e14bf78978085358c4097364a7a1d6d74949f631029dd5",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "hammerhead-shark-male.mp3",
+      "word": "hammerhead shark",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Hammerhead shark.",
+      "sha256": "231a8edbebca89257d10924c9336e5b5da90aea1fbe47075cbcfce89de1a9bff",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "orca-female.mp3",
+      "word": "orca",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Orca.",
+      "sha256": "10d13339cd91da1114e8cd9ac92fb49f4bcf9b7a59535d9b19b55ff00db9f952",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "orca-male.mp3",
+      "word": "orca",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 0.744,
+      "recognizedText": "Orca.",
+      "sha256": "396c76442b909b33e10fff4251e42dbd70cca9c8427759a0650e93aa26a6ed79",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "mackerel-female.mp3",
+      "word": "mackerel",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Mackerel.",
+      "sha256": "22019eb9ed6a97ef208082c48ba5ac92609d36641646f805aea9ec80c7eca21e",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "mackerel-male.mp3",
+      "word": "mackerel",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Mackerel.",
+      "sha256": "0d5e23419e2edb4e5523be87fd70585793a2fdddf2400163ef95ec750d8aede4",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "clownfish-female.mp3",
+      "word": "clownfish",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Clownfish.",
+      "sha256": "d6971160983cbfaed87a05763de98b2eed9413e4af0b602e6bb6f7215188fd1a",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "clownfish-male.mp3",
+      "word": "clownfish",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Clownfish.",
+      "sha256": "1884cbd40d5842d250f0e5182cbcae742afcb117dbaac4879e24dbda74b74da2",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "sardine-female.mp3",
+      "word": "sardine",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Sardine.",
+      "sha256": "30797e4891494ef69b1b0f1c28bcd15f919367c6b86e88f34e46242a2e1d1274",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "sardine-male.mp3",
+      "word": "sardine",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Sardine.",
+      "sha256": "8ce883fe6642c2053fd249952abd829fbae4ec7672821d1a74f60efa13d2f301",
+      "phoneme": null,
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    },
+    {
+      "file": "bonito-female.mp3",
+      "word": "bonito",
+      "voice": "en-US-AvaNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Benito.",
+      "sha256": "0cf350b27161ffa4e2234ed20463788affc01f3ad2567b4c9acb5e844b3c7906",
+      "phoneme": "bəˈniːtoʊ",
+      "recognitionExactMatch": false,
+      "humanReviewRequired": true,
+      "referenceAssistedAssessment": {
+        "Confidence": 0.97561216,
+        "Lexical": "bonito",
+        "ITN": "bonito",
+        "MaskedITN": "bonito",
+        "Display": "Bonito.",
+        "AccuracyScore": 100.0,
+        "FluencyScore": 100.0,
+        "CompletenessScore": 100.0,
+        "PronScore": 100.0,
+        "Words": [
+          {
+            "Word": "bonito",
+            "Offset": 1800000,
+            "Duration": 6900000,
+            "Confidence": 0.0,
+            "AccuracyScore": 100.0,
+            "ErrorType": "None",
+            "Syllables": [
+              {
+                "Syllable": "bax",
+                "Grapheme": "bo",
+                "Offset": 1800000,
+                "Duration": 1800000,
+                "AccuracyScore": 100.0
+              },
+              {
+                "Syllable": "niy",
+                "Grapheme": "ni",
+                "Offset": 3700000,
+                "Duration": 1200000,
+                "AccuracyScore": 100.0
+              },
+              {
+                "Syllable": "tow",
+                "Grapheme": "to",
+                "Offset": 5000000,
+                "Duration": 3700000,
+                "AccuracyScore": 100.0
+              }
+            ],
+            "Phonemes": [
+              {
+                "Phoneme": "b",
+                "Offset": 1800000,
+                "Duration": 1200000,
+                "AccuracyScore": 100.0
+              },
+              {
+                "Phoneme": "ax",
+                "Offset": 3100000,
+                "Duration": 500000,
+                "AccuracyScore": 100.0
+              },
+              {
+                "Phoneme": "n",
+                "Offset": 3700000,
+                "Duration": 600000,
+                "AccuracyScore": 100.0
+              },
+              {
+                "Phoneme": "iy",
+                "Offset": 4400000,
+                "Duration": 500000,
+                "AccuracyScore": 100.0
+              },
+              {
+                "Phoneme": "t",
+                "Offset": 5000000,
+                "Duration": 900000,
+                "AccuracyScore": 100.0
+              },
+              {
+                "Phoneme": "ow",
+                "Offset": 6000000,
+                "Duration": 2700000,
+                "AccuracyScore": 100.0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "bonito-male.mp3",
+      "word": "bonito",
+      "voice": "en-US-AndrewNeural",
+      "durationSeconds": 1.872,
+      "recognizedText": "Bonito.",
+      "sha256": "55bf1cd35f96ed59d2e3b274586dfc2ceec42b675e777e0daf4ee53d80794ab9",
+      "phoneme": "bəˈniːtoʊ",
+      "recognitionExactMatch": true,
+      "humanReviewRequired": false,
+      "referenceAssistedAssessment": null
+    }
+  ],
+  "limitation": "Speech recognition checks words, not phonetic accuracy. Human listening is still required."
+}
